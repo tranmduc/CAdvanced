@@ -1,4 +1,193 @@
 #ifndef	_OSPF_H_
 #define	_OSPF_H_
 
+#include "jrb.h"
+
+#define NETWORK_MAX_SIZE 100
+#define INFINITY_LENGTH 999999
+#define NEGATIVE -1
+#define ACTIVE 1
+#define INACTIVE 0
+
+/** Network consists of a list of Router, list of speeds (1/weights) and lists of Link states (active or not) */
+typedef struct{
+    JRB Router;
+    JRB LinkSpeed;
+    JRB LinkState;
+} Network;
+
+/** Connection: from router_1 to router_2 with a speed demand (in Mbps)
+ * Connection_id is needed because we may have more than 1 connection from r1 to r2. Id is auto-generated.
+ * Ex: <1, network_A, 4,5, 60> is connection with id 1, network A, from router 4 to 5 with a 60 Mbps speed.
+*/
+typedef struct{
+    int id;
+    Network network;
+    int router1;
+    int router2;
+    double speed_demand;
+} Connection;
+
+/******************************GENERAL***************************/
+/** Initialization */
+Network createNetwork();
+Network importNetworkFromFile(char* filename);
+/** Free the network*/
+void dropNetwork(Network network);
+
+
+
+/******************************ROUTER***************************/
+/** Add a router with an id and IP to the network.
+ * Return: 1 if successful, 0 if error
+ */
+int addRouter(Network network, int id, char* IP);
+
+/** Get a router JRB node through the id.
+ * Return: JRB node if found. NULL if not.
+ */
+JRB getRouterbyID(Network network, int id);
+
+/** Get IP of a router through the id 
+ * Return: the string of rounter's IP
+*/
+char* getRouterIPbyID(Network network, int id);
+
+/** Check if the network has vertex with id. Return: 1 (True) or 0 (False) */
+int hasRouter(Network network, int id);
+
+/** Remove a router along with its links.  Return: 1 (success) or 0 (fail)*/
+int removeRouter(Network network, int id);
+
+/******************************LINK***************************/
+/** Add a link to network.
+ * network: a network
+ * router_1: id of 1st router
+ * router_2: id of 2nd router
+ * speed: the initial speed of the link in Mbps
+ * is_active: is this link available (1-active or 0-inactive)
+ * Return: 1 if success and 0 if not*/
+int addLink(Network network, int router_1, int router_2, double speed, int is_active);
+
+/** Add an active link to network
+ * network: a network
+ * router_1: id of 1st router
+ * router_2: id of 2nd router
+ * speed: the initial speed of the link in Mbps
+ * Return: 1 if success and 0 if not
+*/
+int addActiveLink(Network network, int router_1, int router_2, double speed);
+
+/**  Get speed between two routers. 
+ * Return: linkspeed in Mbps or NEGATIVE (-1) if no link between r1 and r2*/
+double getLinkSpeed(Network network, int router_1, int router_2);
+
+/**  set speed between two routers. Auto-trigger update table
+ * speed: in Mbps
+ * Return: 1 (success) or 0 (fail)*/
+int setLinkSpeed(Network network, int router_1, int router_2, double speed);
+
+/**  Get state between two routers
+ * Return: 1-active or 0-inactive or NEGATIVE (-1) if no link between r1 and r2*/
+int getLinkState(Network network, int router_1, int router_2);
+
+/**  set state of a link between two routers. Auto-trigger update table
+ * state: either 0 (inactive) or 1 (active). other value not accepted.
+ * Return: 1 (success) or 0 (fail)*/
+int setLinkState(Network network, int router_1, int router_2, int state);
+
+/** Remove link between r1 and r2 both speed and state. Return: 1 (success) or 0 (fail)*/
+int removeLink(Network network, int router_1, int router_2);
+
+/** Count all rounters & links that connect to this vertex. Store list of vertices into output[NETWORK_MAX_SIZE]
+ * router: rounter id
+ * output[NETWORK_MAX_SIZE]: empty list to store the result
+ * Return: number of routers, or NEGATIVE (-1) if failed.
+*/
+int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE]);
+
+
+/******************************PRINTING***************************/
+/** Given the netowrk, print all rounters & links */
+void printNetwork(Network network); 
+
+/** Print rounters of a network
+ * routers:
+ * id 1: <IP1>
+ * id 2: <IP2>
+ * ...
+*/
+void printRouterNetwork(Network network);
+
+/** Print links of a network
+ * root
+ * |- <IP1>: <IP2> <active or not>
+ * |- <IP2>: <IP3> <active or not>
+*/
+void printLinkNetwork(Network network);
+
+
+/******************************CONNECTION***************************/
+/** Start a connection from start to stop, consuming speed_demand in Mbps every node it goes through.
+ * Return: 1 if sucess or 0 if failed
+*/
+Connection createConnection(Network network, int start, int stop, double speed_demand);
+
+/** Stop connection from start to stop and delete it (if any).
+ * Return: 1 if sucess or 0 if failed
+*/
+int stopConnection(Network network, int start, int stop);
+
+
+/******************************SHORTEST PATH***************************/
+/** Find the shortest path from start to stop and return its weakest link's speed
+ * path: int array pointer of the path (v1->v3->v2)
+ * Return: the weakest link's speed in the path in Mbps. or INFINITY_LENGTH if no path is found
+ * --------------------------
+ * Assumption: non-negative weight edges
+ * Algorithm: using Priority queue
+ * For each vertex v in the graph, we maintain v.d(), the estimate of the shortest path from s, initialized to Infinity the start
+ * Relaxing an edge (u,v) means testing whether we can improve the shortest path to v found so far by going through u
+ * Priority queue is reorganized whenever some v.d() decreases
+ *  */
+double findShortestPath(Network network, int start, int stop, int* path);
+
+
+/** Find the shortest path from start to stop, which can hold the speed_demand.
+ * path: int array pointer of the path (v1->v3->v2)
+ * Return: 1 if a feasible path is found or 0 if failed
+ * --------------------------
+ * */
+int findShortestPathWithSpeedDemand(Network network, int start, int stop, double speed_demand, int* path);
+
+
+/** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 
+ * d: array pointer of estimation shortest path from start
+ * parent: use to backtrace the path
+ * priorityQueue: update the PQ when relax successfully
+ * Return: 1 - True if relaxed successfully, 0 - false otherwise
+*/
+int relax(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+
+/** Init the d,parent array and the priority queue
+ * Priority queue is reorganized whenever some v.d() decreases
+ * (key, value) = (v.d(), v)
+ * Return: the JRB node of priority queue
+ */
+JRB initPriorityQueue(Network network, int start, double* d, int* path);
+
+/** Populate the PQ with data from v.d() and network.
+ * Return: the JRB node of priority queue
+*/
+JRB populatePriorityQueue(Network network, double* d);
+
+/** Update the priority queue due to the new d of vertex
+ * Priority queue: to be updated
+ * router: router id, used to find JRB node
+ * new_d: new value of d
+ * Algo: find the JRB node by router, then delete that node and add a new node (new_d, vertex)
+ * Return: 1 if successful, 0 if vertex node not found
+*/
+int updatePriorityQueue(JRB priorityQueue, int router, double new_d);
+
 #endif

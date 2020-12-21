@@ -11,6 +11,7 @@ lib_tester.o: lib_tester.c
 	$(CC) -c $<
 
 ############### Libs 
+
 input.o: lib/input.c 
 	$(CC) -c $<
 
@@ -24,6 +25,9 @@ sort.o: lib/sort.c
 	$(CC) -c $<
 
 jrb_graph_directed_weighted.o: lib/jrb_graph_directed_weighted.c
+	$(CC) -c $<
+
+ospf.o: lib/ospf.c
 	$(CC) -c $<
 	
 dllist.o: lib/dllist.c
