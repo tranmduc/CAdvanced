@@ -88,10 +88,12 @@ int jrb_plength(JRB n);
 #ifndef jrb_nil
 #define jrb_nil(t) (t)
 #endif
- 
+
+/** Travel through the tree from the first node */
 #define jrb_traverse(ptr, lst) \
   for(ptr = jrb_first(lst); ptr != jrb_nil(lst); ptr = jrb_next(ptr))
- 
+
+/** Travel through the tree from the last node */ 
 #define jrb_rtraverse(ptr, lst) \
   for(ptr = jrb_last(lst); ptr != jrb_nil(lst); ptr = jrb_prev(ptr))
  

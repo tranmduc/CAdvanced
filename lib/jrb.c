@@ -272,6 +272,8 @@ JRB jrb_find_gen(JRB n, Jval key, int (*fxn)(Jval, Jval))
  
 static JRB jrb_insert_b(JRB n, Jval key, Jval val)
 {
+  //printf("jrb_insert_b: %s and %s\n",jval_s(key),jval_s(val)); //DEBUG
+
   JRB newleft, newright, newnode, p;
  
   if (ishead(n)) {
@@ -627,6 +629,9 @@ JRB jrb_insert_str(JRB tree, char *key, Jval val)
   int fnd;
 
   k.s = key;
+
+  //printf("jrb_insert_str: %s and %s\n",key,jval_s(val)); //DEBUG
+
   return jrb_insert_b(jrb_find_gte_str(tree, key, &fnd), k, val);
 }
 

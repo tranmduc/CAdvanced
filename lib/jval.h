@@ -17,8 +17,8 @@ typedef union {
     unsigned int ui;
     int iarray[2];
     float farray[2];
-    char carray[8];
-    unsigned char ucarray[8];
+    char carray[20];
+    unsigned char ucarray[20];
   } Jval;  
 
 extern Jval new_jval_i(int);
@@ -61,4 +61,6 @@ extern int *jval_iarray(Jval);
 extern float *jval_farray(Jval);
 extern char *jval_carray(Jval);
 
+/** Compare two integers stored in jval form */
+int compare_jval_int(Jval jval_int_1, Jval jval_int_2);
 #endif

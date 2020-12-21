@@ -157,3 +157,8 @@ float *jval_farray(Jval j) {
 char *jval_carray(Jval j) {
   return j.carray;
 }
+
+/** Compare two integers stored in jval form */
+int compare_jval_int(Jval jval_int_1, Jval jval_int_2){
+  return jval_i(jval_int_1) - jval_i(jval_int_2);
+}
