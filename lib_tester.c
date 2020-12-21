@@ -132,8 +132,8 @@ int testDijkstra(){
     int path[GRAPH_MAX_SIZE];
     int num_ver_on_path;
 
-    int start = 0;
-    int stop = 4;
+    int start = 3;
+    int stop = 2;
 
     double path_length = findShortestPath(g, start, stop, path, &num_ver_on_path);
     int doesPathExist = !(path_length == INFINITY_LENGTH);

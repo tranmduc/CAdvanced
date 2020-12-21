@@ -131,9 +131,10 @@ double findShortestPath(Graph graph, int start, int stop, int* path, int* num_ve
 /** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 
  * d: array pointer of estimation shortest path from start
  * parent: use to backtrace the path
+ * priorityQueue: update the PQ when relax successfully
  * Return: True if relaxed successfully, false otherwise
 */
-int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path);
+int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
 
 /** Init the d,parent array and the priority queue
  * Priority queue is reorganized whenever some v.d() decreases
@@ -141,9 +142,23 @@ int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path
  */
 JRB initPriorityQueue(Graph graph, int start, double* d, int* path);
 
-/** Free and repopulate the PQ with data from v.d() and graph*/
-JRB updatePriorityQueue(Graph graph, JRB priorityQueue, double* d);
+/** Populate the PQ with data from v.d() and graph*/
+JRB populatePriorityQueue(Graph graph, double* d);
+
+/** Update the priority queue due to the new d of vertex
+ * Priority queue: to be updated
+ * vertex: vertex id, used to find JRB node
+ * new_d: new value of d
+ * Algo: find the JRB node by vertex, then delete that node and add a new node (new_d, vertex)
+ * Return: 1 if successful, 0 if vertex node not found
+*/
+int updatePriorityQueue(JRB priorityQueue, int vertex, double new_d);
 
 /** Void function of int*/
 void void_funct_int(int v);
+
+/** Given array path[], find num_ver_on_path to destination
+ * Return: num_ver_on_path changes, nothing else changes
+*/
+void findNumVerOnPath(int* num_ver_on_path, int* path, int start, int stop);
 #endif

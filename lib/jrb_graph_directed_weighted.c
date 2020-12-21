@@ -618,20 +618,44 @@ void topologicalSort(Graph graph, int* output_array, int* output_length){
 /** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 
  * d: array pointer of estimation shortest path from start
  * parent: use to backtrace the path
+ * priorityQueue: update the PQ when relax successfully
  * Return: True if relaxed successfully, false otherwise
 */
-int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path){
+int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue){
     double new_weight = d[intermediate_v] + getEdgeValue(graph, intermediate_v, current_des);
 
     //printf("relax: inter:%d - des:%d - old weight: %.2f - new weight: %.2f\n", intermediate_v, current_des, d[current_des], new_weight); //DEBUG
-
+    
     if(d[current_des] > new_weight){
         //it is better to go through intermediate_v to current_des
         //printf("Better\n"); //Relax
         d[current_des] = new_weight;
         path[intermediate_v] = current_des; 
+        updatePriorityQueue(priorityQueue, current_des , new_weight);
         return 1;
     }
+    return 0;
+}
+
+/** Update the priority queue due to the new d of vertex
+ * Priority queue: to be updated
+ * vertex: vertex id, used to find JRB node
+ * new_d: new value of d
+ * Algo: find the JRB node by vertex, then delete that node and add a new node (new_d, vertex)
+ * Return: 1 if successful, 0 if vertex node not found
+*/
+int updatePriorityQueue(JRB priorityQueue, int vertex, double new_d){
+    JRB node;
+    jrb_traverse(node, priorityQueue){
+        if(jval_i(node->val) == vertex){
+            //found
+            jrb_delete_node(node);
+            jrb_insert_dbl(priorityQueue, new_d, new_jval_i(vertex));            
+            return 1;
+        }
+    }
+
+    //not found node
     return 0;
 }
 
@@ -649,6 +673,19 @@ int relax(Graph graph, int intermediate_v, int current_des, double* d, int* path
  * Priority queue is reorganized whenever some v.d() decreases
  *  */
 double findShortestPath(Graph graph, int start, int stop, int* path, int* num_ver_on_path){
+    //check trivial conditions
+    if(graph.vertices == NULL || graph.edges == NULL) return INFINITY_LENGTH;
+    if(jrb_find_int(graph.vertices, start) == NULL){
+        //start vertex not in graph
+        fprintf(stderr, "Start vertex %d not in graph\n", start);
+        return INFINITY_LENGTH; 
+    }
+    if(jrb_find_int(graph.vertices, stop) == NULL){
+        //stop vertex not in graph
+        fprintf(stderr, "Stop vertex %d not in graph\n", stop);
+        return INFINITY_LENGTH;
+    }
+
     double d[GRAPH_MAX_SIZE]; //estimation from start to every vertex
 
     JRB priorityQueue = initPriorityQueue(graph, start, d, path);
@@ -665,31 +702,35 @@ double findShortestPath(Graph graph, int start, int stop, int* path, int* num_ve
 
         //Recalculate all path from vertex_min to outDegree
         int output[GRAPH_MAX_SIZE];
-        int relax_bool;
         int n = outDegree(graph, vertex_min_in_PQ, output);
         int current_des;
 
         for(int i=0; i<n; i++){
             current_des = output[i];
-            relax_bool = relax(graph, vertex_min_in_PQ, current_des, d, path);
-            
-            //recalculate PriorityQueue
-            if(relax_bool){                
-                priorityQueue = updatePriorityQueue(graph, priorityQueue, d);
-            }
+            relax(graph, vertex_min_in_PQ, current_des, d, path, priorityQueue);
         }
     }    
-    /**
-    for (size_t i = 0; i < 5; i++) printf("path[%d] = %d\n", i, path[i]); //DEBUG
-    for (size_t i = 0; i < 5; i++)printf("d[%d] = %.2f\n", i, d[i]); //DEBUG
-    */
+    
 
     //PQ is empty, spanning from start vertex complete
+
+    //for (size_t i = 0; i < 5; i++) printf("path[%d] = %d\n", i, path[i]); //DEBUG
+    //for (size_t i = 0; i < 5; i++)printf("d[%d] = %.2f\n", i, d[i]); //DEBUG
 
     //can not reach destination
     if (d[stop] == INFINITY_LENGTH) return INFINITY_LENGTH;
 
     //can reach, find num_ver_on_path
+    findNumVerOnPath(num_ver_on_path, path, start, stop);
+
+    return d[stop];    
+}
+
+
+/** Given array path[], find num_ver_on_path to destination
+ * Return: num_ver_on_path changes, nothing else changes
+*/
+void findNumVerOnPath(int* num_ver_on_path, int* path, int start, int stop){
     *num_ver_on_path = 1;
     int i = start;
 
@@ -698,28 +739,20 @@ double findShortestPath(Graph graph, int start, int stop, int* path, int* num_ve
         (*num_ver_on_path)++;
         i = path[i];
     }
-
-    return d[stop];    
 }
 
-/** Free and repopulate the PQ with data from v.d() and graph*/
-JRB updatePriorityQueue(Graph graph, JRB priorityQueue, double* d){
-    if(!jrb_nil(priorityQueue)) jrb_free_tree(priorityQueue);
-
-    //printf("updatePriorityQueue - Ckpt 1\n"); //DEBUG
-
-    JRB newPQ = make_jrb(); 
+/** Populate the PQ with data from v.d() and graph*/
+JRB populatePriorityQueue(Graph graph, double* d){
+    JRB pq = make_jrb(); 
     //init priority queue (key, value) = (v.d, v) ~ (double, int)
     JRB vertex_node;
     jrb_traverse(vertex_node, graph.vertices){
         int vertex = jval_i(vertex_node->key);
-        jrb_insert_dbl(newPQ, d[vertex], new_jval_i(vertex));
-        //printf("updatePriorityQueue: d[%d] = %.2f\n", vertex, d[vertex]); //DEBUG
+        jrb_insert_dbl(pq, d[vertex], new_jval_i(vertex));
+        //printf("populate: d[%d] = %.2f\n", vertex, d[vertex]); //DEBUG
     }
 
-    //printf("updatePriorityQueue - Ckpt 2\n"); //DEBUG
-
-    return newPQ;
+    return pq;
 }
 
 /** Init the d,parent array and the priority queue
@@ -727,10 +760,7 @@ JRB updatePriorityQueue(Graph graph, JRB priorityQueue, double* d){
  * (key, value) = (v.d(), v)
  */
 JRB initPriorityQueue(Graph graph, int start, double* d, int* path){
-    //a priority queue ADT keyed by v.d(), which is re-organized whenever some d decreases (v.d() is key of tree's node, v is value)
-    JRB priorityQueue; 
-
-    // printf("initPriorityQueue - Ckpt 1\n"); //DEBUG
+    //printf("initPriorityQueue - Ckpt 1\n"); //DEBUG
 
     //init d[] and parent[]
     JRB vertex_node;
@@ -744,7 +774,7 @@ JRB initPriorityQueue(Graph graph, int start, double* d, int* path){
 
     // printf("initPriorityQueue - Ckpt 2\n"); //DEBUG
 
-    //init priority queue (key, value) = (v.d, v) ~ (double, int)
-    return updatePriorityQueue(graph, priorityQueue, d);
+    //a priority queue ADT keyed by v.d(), which is re-organized whenever some d decreases (v.d() is key of tree's node, v is value)
+    return populatePriorityQueue(graph, d);
 
 }
