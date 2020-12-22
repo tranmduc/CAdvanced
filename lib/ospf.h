@@ -56,6 +56,10 @@ void dropNetwork(Network network);
 /** Given the netowrk, print all rounters & links */
 void printNetwork(Network network); 
 
+
+/******************************PRINTING***************************/
+/** Implementation: print_graph.c - Duc */
+
 /** Print rounters of a network
  * routers:
  * id 1: <IP1>
@@ -127,11 +131,11 @@ double getLinkSpeed(Network network, int router_1, int router_2);
 int setLinkSpeed(Network network, int router_1, int router_2, double speed);
 
 /**  Get state between two routers
- * Return: 1-active or 0-inactive or NEGATIVE (-1) if no link between r1 and r2*/
+ * Return: 1-active or 0-inactive or 2 (busy) or NEGATIVE (-1) if no link between r1 and r2*/
 int getLinkState(Network network, int router_1, int router_2);
 
 /**  set state of a link between two routers. Auto-trigger update table
- * state: either 0 (inactive) or 1 (active). other value not accepted.
+ * state: either 0 (inactive) or 1 (active) or 2 (busy). other value not accepted.
  * Return: 1 (success) or 0 (fail)*/
 int setLinkState(Network network, int router_1, int router_2, int state);
 
@@ -217,6 +221,7 @@ extern Connection dll_val(ConnectionList);
 /** Find the shortest path from start to stop and return its weakest link's speed
  * path: int array pointer of the path (v1->v3->v2)
  * Return: the weakest link's speed in the path in Mbps. or INFINITY_LENGTH if no path is found
+ * Usage: find path when create connection; find next hop
  * --------------------------
  * Assumption: non-negative weight edges
  * Algorithm: using Priority queue
@@ -225,6 +230,11 @@ extern Connection dll_val(ConnectionList);
  * Priority queue is reorganized whenever some v.d() decreases
  *  */
 double findShortestPath(Network network, int start, int stop, int* path);
+
+/** Using findShortestPath() to find the next hop from start to stop(destination).
+ * Return: id of the next hop router. Or -1 (NEGATIVE) if no path is available
+*/
+int findNextHop(Network network, int start, int stop);
 
 
 /** Find a path from start to stop with max_capacity, or max(min(speed)) along links in the path
