@@ -6,8 +6,11 @@
 #define NETWORK_MAX_SIZE 100
 #define INFINITY_LENGTH 999999
 #define NEGATIVE -1
+
+// Router states
 #define ACTIVE 1
 #define INACTIVE 0
+#define BUSY 2 //used up all capacity
 
 /** Network consists of a list of Router, list of speeds (1/weights) and lists of Link states (active or not) */
 typedef struct{
@@ -18,26 +21,60 @@ typedef struct{
 
 /** Connection: from router_1 to router_2 with a speed demand (in Mbps)
  * Connection_id is needed because we may have more than 1 connection from r1 to r2. Id is auto-generated.
+ * router1, router2: two end-points
+ * path[] the path of this connection
  * Ex: <1, network_A, 4,5, 60> is connection with id 1, network A, from router 4 to 5 with a 60 Mbps speed.
 */
+
 typedef struct{
     int id;
     Network network;
     int router1;
     int router2;
     double speed_demand;
-} Connection;
+    int path[NETWORK_MAX_SIZE];
+} Connection; 
+
+/** Double linked List of connections*/
+typedef struct ConnectionNode{
+    struct ConnectionNode *flink;
+    struct ConnectionNode *blink;
+    Connection val;
+} *ConnectionList;
+
+extern int id_generator = 1; //generate id
 
 /******************************GENERAL***************************/
+/** Implementation: network.c */
+
 /** Initialization */
 Network createNetwork();
 Network importNetworkFromFile(char* filename);
 /** Free the network*/
 void dropNetwork(Network network);
 
+/** Given the netowrk, print all rounters & links */
+void printNetwork(Network network); 
+
+/** Print rounters of a network
+ * routers:
+ * id 1: <IP1>
+ * id 2: <IP2>
+ * ...
+*/
+void printRouterNetwork(Network network);
+
+/** Print links of a network
+ * root
+ * |- <IP1>: <IP2> <active or not>
+ * |- <IP2>: <IP3> <active or not>
+*/
+void printLinkNetwork(Network network);
 
 
 /******************************ROUTER***************************/
+/** Implementation: router.c */
+
 /** Add a router with an id and IP to the network.
  * Return: 1 if successful, 0 if error
  */
@@ -60,6 +97,8 @@ int hasRouter(Network network, int id);
 int removeRouter(Network network, int id);
 
 /******************************LINK***************************/
+/** Implementation: link.c */
+
 /** Add a link to network.
  * network: a network
  * router_1: id of 1st router
@@ -107,39 +146,74 @@ int removeLink(Network network, int router_1, int router_2);
 int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE]);
 
 
-/******************************PRINTING***************************/
-/** Given the netowrk, print all rounters & links */
-void printNetwork(Network network); 
-
-/** Print rounters of a network
- * routers:
- * id 1: <IP1>
- * id 2: <IP2>
- * ...
-*/
-void printRouterNetwork(Network network);
-
-/** Print links of a network
- * root
- * |- <IP1>: <IP2> <active or not>
- * |- <IP2>: <IP3> <active or not>
-*/
-void printLinkNetwork(Network network);
-
 
 /******************************CONNECTION***************************/
-/** Start a connection from start to stop, consuming speed_demand in Mbps every node it goes through.
+/** Implementation: connection.c */
+
+/** Start a list of connection from start to stop.
+ * If speed_demand < capacity, then one connection is created only
+ * If not, then the connection will be split into a list of Connection[]
+ * Return: the list of Connection if sucess or NULL if failed
+ * Algo:
+ * Step 1: findShortestPath, if speed_demand is smaller thatn shortestPath's capacity, then choose this path
+ * Step 2: if not, then findMaxCapacityPath. If return positive, OK; negative, to step 3
+ * Step 3: Split connection into one connection with max_capacity speed demand is step 2.
+ * Activate this connection (meaning modify all links' speed along the max_capacity path)
+ * Go back to step 2 and try again with the new network
+ * Terminate condition: speed_demand < capacity (success) or no more path can be created (failed)
+*/
+ConnectionList createConnection(Network network, int start, int stop, double speed_demand);
+
+/** Start a connection. Modify the graph's edges
  * Return: 1 if sucess or 0 if failed
 */
-Connection createConnection(Network network, int start, int stop, double speed_demand);
+int activateConnection(Connection *connection);
 
-/** Stop connection from start to stop and delete it (if any).
+/** Stop a specific connection  (not delete it)
+*/
+int deactivateConnection(Connection *connection);
+
+/** Stop all connections from start to stop (not delete it)
  * Return: 1 if sucess or 0 if failed
 */
-int stopConnection(Network network, int start, int stop);
+int deactivateAllConnections(Network network, int start, int stop);
 
 
-/******************************SHORTEST PATH***************************/
+
+/******************************CONNECTION LIST***************************/
+/** Implementation: dll_connection.c */
+
+extern ConnectionList new_dllist();
+extern void free_dllist(ConnectionList);
+
+extern void dll_append(ConnectionList, Connection);
+extern void dll_prepend(ConnectionList, Connection);
+extern void dll_insert_b(ConnectionList, Connection);
+extern void dll_insert_a(ConnectionList, Connection);
+
+extern void dll_delete_node(ConnectionList);
+extern int dll_is_empty(ConnectionList);
+
+extern ConnectionList dll_find_node(ConnectionList, Connection);
+extern ConnectionList dll_find_and_delete_node(ConnectionList, Connection);
+
+extern Connection dll_val(ConnectionList);
+
+#define dll_first(d) ((d)->flink)
+#define dll_next(d) ((d)->flink)
+#define dll_last(d) ((d)->blink)
+#define dll_prev(d) ((d)->blink)
+#define dll_nil(d) (d)
+
+#define dll_traverse(ptr, list) \
+  for (ptr = list->flink; ptr != list; ptr = ptr->flink)
+#define dll_rtraverse(ptr, list) \
+  for (ptr = list->blink; ptr != list; ptr = ptr->blink)
+
+
+/******************************PATH ALGORITHMS***************************/
+/** Implementation: path_algo.c */
+
 /** Find the shortest path from start to stop and return its weakest link's speed
  * path: int array pointer of the path (v1->v3->v2)
  * Return: the weakest link's speed in the path in Mbps. or INFINITY_LENGTH if no path is found
@@ -153,12 +227,16 @@ int stopConnection(Network network, int start, int stop);
 double findShortestPath(Network network, int start, int stop, int* path);
 
 
-/** Find the shortest path from start to stop, which can hold the speed_demand.
+/** Find a path from start to stop with max_capacity, or max(min(speed)) along links in the path
+ * Djkistra: path with weight 4-5-6 is better, which can hold 100/6=16,667 Mbps
+ * Capacity: Path 5-5-5-5 is better, which can hold 20 Mbps
  * path: int array pointer of the path (v1->v3->v2)
- * Return: 1 if a feasible path is found or 0 if failed
+ * Return: the max_capacity of a path which is < speed_demand, or -max_capacity if no path exceeds speed_demand
+ * Or INFINITY_LENGTH if no path from start to stop can be found
+ * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
-int findShortestPathWithSpeedDemand(Network network, int start, int stop, double speed_demand, int* path);
+double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* path);
 
 
 /** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 

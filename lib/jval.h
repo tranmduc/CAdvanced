@@ -63,4 +63,5 @@ extern char *jval_carray(Jval);
 
 /** Compare two integers stored in jval form */
 int compare_jval_int(Jval jval_int_1, Jval jval_int_2);
+
 #endif

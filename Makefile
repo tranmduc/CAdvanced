@@ -4,7 +4,7 @@ all: lib_tester
 	make clean
 
 ############### Without Libs
-lib_tester: lib_tester.o jval.o jrb.o queue.o stack.o dllist.o jrb_graph_directed_weighted.o
+lib_tester: lib_tester.o jval.o jrb.o queue.o stack.o dllist.o jrb_graph_directed_weighted.o dllist.o
 	${CC} $^ -o $@
 
 lib_tester.o: lib_tester.c
@@ -27,7 +27,7 @@ sort.o: lib/sort.c
 jrb_graph_directed_weighted.o: lib/jrb_graph_directed_weighted.c
 	$(CC) -c $<
 
-ospf.o: lib/ospf.c
+ospf.o: lib/ospf.c dllist.o
 	$(CC) -c $<
 	
 dllist.o: lib/dllist.c
