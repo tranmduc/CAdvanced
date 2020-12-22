@@ -1,3 +1,5 @@
+##Author: Nguyen Minh Tu - 20154203
+
 CC = gcc
 
 all: lib_tester
@@ -11,32 +13,28 @@ lib_tester.o: lib_tester.c
 	$(CC) -c $<
 
 ############### Libs 
-
-input.o: lib/input.c 
+jrb.o: lib/standard/jrb.c 
 	$(CC) -c $<
 
-jrb.o: lib/jrb.c 
+jval.o: lib/standard/jval.c 
 	$(CC) -c $<
 
-jval.o: lib/jval.c 
+sort.o: lib/standard/sort.c 
 	$(CC) -c $<
 
-sort.o: lib/sort.c 
+jrb_graph_directed_weighted.o: lib/standard/jrb_graph_directed_weighted.c
 	$(CC) -c $<
 
-jrb_graph_directed_weighted.o: lib/jrb_graph_directed_weighted.c
-	$(CC) -c $<
-
-ospf.o: lib/ospf.c dllist.o
+ospf.o: lib/ospf/ospf.c dllist.o
 	$(CC) -c $<
 	
-dllist.o: lib/dllist.c
+dllist.o: lib/standard/dllist.c
 	$(CC) -c $<
 
-queue.o: lib/queue.c
+queue.o: lib/standard/queue.c
 	$(CC) -c $<
 
-stack.o: lib/stack.c
+stack.o: lib/standard/stack.c
 	$(CC) -c $<
 ############### Others
 .PHONY: clean

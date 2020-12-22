@@ -4,9 +4,9 @@
 #include<stdlib.h>
 #include<string.h>
 
-#include "lib/jrb_graph_directed_weighted.h"
-#include "lib/queue.h"
-#include "lib/stack.h"
+#include "lib/standard/jrb_graph_directed_weighted.h"
+#include "lib/standard/queue.h"
+#include "lib/standard/stack.h"
 
 Graph initGraph(){
     Graph g = createGraph();

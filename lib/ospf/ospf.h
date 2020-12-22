@@ -154,10 +154,11 @@ int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE
 /******************************CONNECTION***************************/
 /** Implementation: connection.c */
 
-/** Start a list of connection from start to stop.
+/** Start a list of connection from start to stop - mimicking packet switching
  * If speed_demand < capacity, then one connection is created only
  * If not, then the connection will be split into a list of Connection[]
  * Return: the list of Connection if sucess or NULL if failed
+ * ------------------
  * Algo:
  * Step 1: findShortestPath, if speed_demand is smaller thatn shortestPath's capacity, then choose this path
  * Step 2: if not, then findMaxCapacityPath. If return positive, OK; negative, to step 3
