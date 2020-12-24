@@ -198,16 +198,25 @@ int deactivateAllConnections(Network network, int start, int stop);
 extern ConnectionList new_dllist();
 extern void free_dllist(ConnectionList);
 
+/** Inserts at the end of the list. */
 extern void dll_append(ConnectionList, Connection);
 extern void dll_prepend(ConnectionList, Connection);
+
+/** Inserts before a given node. */ 
 extern void dll_insert_b(ConnectionList, Connection);
+
+/** Inserts after a given node. */
 extern void dll_insert_a(ConnectionList, Connection);
 
+/** Deletes an arbitrary item. */
 extern void dll_delete_node(ConnectionList);
 extern int dll_is_empty(ConnectionList);
 
+/** Find a node that has the given connection. Return the node or NULL if not found.*/
 extern ConnectionList dll_find_node(ConnectionList, Connection);
-extern ConnectionList dll_find_and_delete_node(ConnectionList, Connection);
+
+/** Find & delete node that has the given connection. Return 1 (success) or 0 (failed) */
+extern int dll_find_and_delete_node(ConnectionList, Connection);
 
 extern Connection dll_val(ConnectionList);
 

@@ -4,29 +4,81 @@
 /******************************CONNECTION LIST***************************/
 /** Implementation: dll_connection.c */
 
-extern ConnectionList new_dllist();
-extern void free_dllist(ConnectionList);
+ConnectionList new_dllist(){
+  ConnectionList d;
 
-extern void dll_append(ConnectionList, Connection);
-extern void dll_prepend(ConnectionList, Connection);
-extern void dll_insert_b(ConnectionList, Connection);
-extern void dll_insert_a(ConnectionList, Connection);
+  d = malloc(sizeof(struct ConnectionNode));
+  d->flink = d;
+  d->blink = d;
+  return d;
+}
+void free_dllist(ConnectionList l){
+  while (!dll_is_empty(l)) {
+    dll_delete_node(dll_first(l));
+  }
+  free(l);
+}
 
-extern void dll_delete_node(ConnectionList);
-extern int dll_is_empty(ConnectionList);
+/** Inserts at the end of the list. */
+void dll_append(ConnectionList l, Connection con){
+  dll_insert_b(l, con);
+}
 
-extern ConnectionList dll_find_node(ConnectionList, Connection);
-extern ConnectionList dll_find_and_delete_node(ConnectionList, Connection);
+/** Inserts at the beginning of the list. */
+void dll_prepend(ConnectionList l, Connection con){
+  dll_insert_b(l->flink, con);
+}
 
-extern Connection dll_val(ConnectionList);
+/** Inserts before a given node. */ 
+void dll_insert_b(ConnectionList list, Connection con){
+  ConnectionList newnode;
 
-#define dll_first(d) ((d)->flink)
-#define dll_next(d) ((d)->flink)
-#define dll_last(d) ((d)->blink)
-#define dll_prev(d) ((d)->blink)
-#define dll_nil(d) (d)
+  newnode = (ConnectionList) malloc (sizeof(struct ConnectionNode));
+  newnode->val = con;
 
-#define dll_traverse(ptr, list) \
-  for (ptr = list->flink; ptr != list; ptr = ptr->flink)
-#define dll_rtraverse(ptr, list) \
-  for (ptr = list->blink; ptr != list; ptr = ptr->blink)
+  newnode->flink = list;
+  newnode->blink = list->blink;
+  newnode->flink->blink = newnode;
+  newnode->blink->flink = newnode;
+}
+
+
+/** Inserts after a given node. */
+void dll_insert_a(ConnectionList n, Connection con){
+  dll_insert_b(n->flink, con);
+}
+
+/** Deletes an arbitrary item. */
+extern void dll_delete_node(ConnectionList node){
+  node->flink->blink = node->blink;
+  node->blink->flink = node->flink;
+  free(node);
+}
+
+
+extern int dll_is_empty(ConnectionList l){
+  return (l->flink == l);
+}
+
+extern Connection dll_val(ConnectionList con){
+  return con->val;
+}
+
+
+/** Find a node that has the given connection. Return the node or NULL if not found.*/
+ConnectionList dll_find_node(ConnectionList l, Connection con){
+  ConnectionList travel;
+  jrb_traverse(travel, l){
+    if(travel->val.id == con.id) return travel;
+  }
+  return NULL;
+}
+
+/** Find & delete node that has the given connection. Return 1 (success) or 0 (failed) */
+int dll_find_and_delete_node(ConnectionList l, Connection con){
+  ConnectionList found = dll_find_node(l, con);
+  if(found == NULL) return 0;
+  //found
+  free(found);
+  return 1;
+}
