@@ -1,7 +1,7 @@
 #ifndef	_OSPF_H_
 #define	_OSPF_H_
 
-#include "jrb.h"
+#include "../standard/jrb.h"
 
 #define NETWORK_MAX_SIZE 100
 #define INFINITY_LENGTH 999999
@@ -14,9 +14,9 @@
 
 /** Network consists of a list of Router, list of speeds (1/weights) and lists of Link states (active or not) */
 typedef struct{
-    JRB Router;
-    JRB LinkSpeed;
-    JRB LinkState;
+    JRB router;
+    JRB linkSpeed;
+    JRB linkState;
 } Network;
 
 /** Connection: from router_1 to router_2 with a speed demand (in Mbps)
@@ -42,23 +42,26 @@ typedef struct ConnectionNode{
     Connection val;
 } *ConnectionList;
 
-extern int id_generator = 1; //generate id
-
 /******************************GENERAL***************************/
 /** Implementation: network.c */
 
 /** Initialization */
 Network createNetwork();
-Network importNetworkFromFile(char* filename);
+
 /** Free the network*/
 void dropNetwork(Network network);
 
-/** Given the netowrk, print all rounters & links */
-void printNetwork(Network network); 
+/******************************IMPORT***************************/
+/** Implementation: import.c - Hung */
+Network importNetworkFromFile(char* filename);
 
 
 /******************************PRINTING***************************/
 /** Implementation: print_graph.c - Duc */
+
+
+/** Given the netowrk, print all rounters & links */
+void printNetwork(Network network); 
 
 /** Print rounters of a network
  * routers:
@@ -121,6 +124,10 @@ int addLink(Network network, int router_1, int router_2, double speed, int is_ac
 */
 int addActiveLink(Network network, int router_1, int router_2, double speed);
 
+/**  Get weight between two routers. Used in Djikistra 
+ * Return: weight in 100/speed or INFINITY_LENGTH if no link between r1 and r2*/
+double getLinkWeight(Network network, int router_1, int router_2);
+
 /**  Get speed between two routers. 
  * Return: linkspeed in Mbps or NEGATIVE (-1) if no link between r1 and r2*/
 double getLinkSpeed(Network network, int router_1, int router_2);
@@ -175,7 +182,7 @@ ConnectionList createConnection(Network network, int start, int stop, double spe
 int activateConnection(Connection *connection);
 
 /** Stop a specific connection  (not delete it)
-*/
+ * Return: 1 if sucess or 0 if failed */
 int deactivateConnection(Connection *connection);
 
 /** Stop all connections from start to stop (not delete it)
