@@ -243,7 +243,7 @@ extern Connection dll_val(ConnectionList);
 /** Implementation: path_algo.c */
 
 /** Find the shortest path from start to stop and return its weakest link's speed
- * path: int array pointer of the path (v1->v3->v2)
+ * prev: int array pointer of the path (v1->v3->v2)
  * Return: the weakest link's speed in the path in Mbps. or INFINITY_LENGTH if no path is found
  * Usage: find path when create connection; find next hop
  * --------------------------
@@ -253,7 +253,7 @@ extern Connection dll_val(ConnectionList);
  * Relaxing an edge (u,v) means testing whether we can improve the shortest path to v found so far by going through u
  * Priority queue is reorganized whenever some v.d() decreases
  *  */
-double findShortestPath(Network network, int start, int stop, int* path);
+double findShortestPath(Network network, int start, int stop, int* prev);
 
 /** Using findShortestPath() to find the next hop from start to stop(destination).
  * Return: id of the next hop router. Or -1 (NEGATIVE) if no path is available
@@ -264,13 +264,13 @@ int findNextHop(Network network, int start, int stop);
 /** Find a path from start to stop with max_capacity, or max(min(speed)) along links in the path
  * Djkistra: path with weight 4-5-6 is better, which can hold 100/6=16,667 Mbps
  * Capacity: Path 5-5-5-5 is better, which can hold 20 Mbps
- * path: int array pointer of the path (v1->v3->v2)
+ * prev: int array pointer of the path (v1->v3->v2)
  * Return: the max_capacity of a path which is < speed_demand, or -max_capacity if no path exceeds speed_demand
  * Or INFINITY_LENGTH if no path from start to stop can be found
  * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
-double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* path);
+double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* prev);
 
 
 
@@ -280,10 +280,10 @@ double findMaxCapacityPath(Network network, int start, int stop, double speed_de
  * priorityQueue: update the PQ when relax successfully
  * Return: 1 - True if relaxed successfully, 0 - false otherwise
 */
-int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue);
 
 /** Relax an edge to find the max capacity path */
-int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue);
 
 
 /** Init the d,parent array and the priority queue

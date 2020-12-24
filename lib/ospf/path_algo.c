@@ -5,7 +5,7 @@
 /** Implementation: path_algo.c */
 
 /** Find the shortest path from start to stop and return its weakest link's speed
- * path: int array pointer of the path (v1->v3->v2)
+ * prev: int array pointer of the path (v1->v3->v2)
  * Return: the weakest link's speed in the path in Mbps. or INFINITY_LENGTH if no path is found
  * Usage: find path when create connection; find next hop
  * --------------------------
@@ -15,12 +15,12 @@
  * Relaxing an edge (u,v) means testing whether we can improve the shortest path to v found so far by going through u
  * Priority queue is reorganized whenever some v.d() decreases
  *  */
-double findShortestPath(Network network, int start, int stop, int* path){
+double findShortestPath(Network network, int start, int stop, int* prev){
     if(checkExistance(network, start, stop) == 0) return INFINITY_LENGTH;
 
     double d[NETWORK_MAX_SIZE]; //estimation from start to every vertex
 
-    JRB priorityQueue = initPriorityQueue(network, start, d, path);
+    JRB priorityQueue = initPriorityQueue(network, start, d, prev);
 
     //Pop from queue the smallest value and process
     while(!jrb_empty(priorityQueue)){
@@ -38,41 +38,41 @@ double findShortestPath(Network network, int start, int stop, int* path){
 
         for(int i=0; i<n; i++){
             current_des = output[i];
-            relaxShortestPath(network, vertex_min_in_PQ, current_des, d, path, priorityQueue);
+            relaxShortestPath(network, vertex_min_in_PQ, current_des, d, prev, priorityQueue);
         }
     }    
     
 
     //PQ is empty, spanning from start vertex complete
-    //for (size_t i = 0; i < 5; i++) printf("path[%d] = %d\n", i, path[i]); //DEBUG
-    //for (size_t i = 0; i < 5; i++)printf("d[%d] = %.2f\n", i, d[i]); //DEBUG
+    for (size_t i = 1; i < 5; i++) printf("prev[%d] = %d\n", i, prev[i]); //DEBUG
+    for (size_t i = 1; i < 5; i++)printf("d[%d] = %.2f\n", i, d[i]); //DEBUG
 
     //can not reach destination
     if (d[stop] == INFINITY_LENGTH) return INFINITY_LENGTH;
 
     //can reach destination, find path's capacity to return
 
-    return findPathCapacity(network, start, stop, path);  
+    return findPathCapacity(network, start, stop, prev);  
 }
 
 /** Given a well-established path from start to stop, find its max capacity (or min(link's speed))
  * Return: minimum link speed of links on path (in Mbps); 0 if start == stop; Or NEGATIVE (-1) otherwise
 */
-double findPathCapacity(Network network, int start, int stop, int* path){
+double findPathCapacity(Network network, int start, int stop, int* prev){
     if(checkExistance(network, start, stop) == 0) return NEGATIVE;
     if(start == stop) return 0;
 
     double minSpeed = INFINITY_LENGTH;
-    int node1 = start;
-    int node2 = path[start];
+    int node1 = stop;
+    int node2 = prev[stop];
     double linkSpeed;
 
-    while(node1 != stop){
-        linkSpeed = getLinkSpeed(network, node1, node2);
-        if(minSpeed < linkSpeed) minSpeed = linkSpeed;
+    while(node1 != start){
+        linkSpeed = getLinkSpeed(network, node2, node1);
+        if(minSpeed > linkSpeed) minSpeed = linkSpeed;
         //move nodes forward
         node1 = node2;
-        if(node1 != stop) node2 = path[node2];
+        if(node1 != start) node2 = prev[node2];
     }
     return minSpeed;
 }
@@ -108,18 +108,18 @@ double findMaxCapacityPath(Network network, int start, int stop, double speed_de
  * priorityQueue: update the PQ when relax successfully
  * Return: 1 - True if relaxed successfully, 0 - false otherwise
 */
-int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue){
+int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue){
     if(getLinkState(network, intermediate_v, current_des) != ACTIVE ) return 0; //only check for active links
 
     double new_weight = d[intermediate_v] + getLinkWeight(network, intermediate_v, current_des);
 
-    //printf("relax: inter:%d - des:%d - old weight: %.2f - new weight: %.2f\n", intermediate_v, current_des, d[current_des], new_weight); //DEBUG
+    printf("relax: inter:%d - des:%d - old weight: %.2f - new weight: %.2f\n", intermediate_v, current_des, d[current_des], new_weight); //DEBUG
     
     if(d[current_des] > new_weight){
         //it is better to go through intermediate_v to current_des
         //printf("Better\n"); //Relax
         d[current_des] = new_weight;
-        path[intermediate_v] = current_des; 
+        prev[current_des] = intermediate_v; 
         updatePriorityQueue(priorityQueue, current_des , new_weight);
         return 1;
     }
@@ -137,13 +137,13 @@ int relaxMaxCapacity(Network network, int intermediate_v, int current_des, doubl
  * (key, value) = (v.d(), v)
  * Return: the JRB node of priority queue
  */
-JRB initPriorityQueue(Network network, int start, double* d, int* path){
+JRB initPriorityQueue(Network network, int start, double* d, int* prev){
     //init d[] and parent[]
     JRB router_node;
     jrb_traverse(router_node, network.router){
         int router = jval_i(router_node->key);
         d[router] = INFINITY_LENGTH;
-        path[router] = -1; //set parent of vertices to null
+        prev[router] = -1; //set parent of vertices to null
     }
 
     d[start] = 0;

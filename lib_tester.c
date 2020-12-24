@@ -18,7 +18,7 @@ Network initNetwork(){
 
     addActiveLink(net, 1, 2, 40);
     addActiveLink(net, 1, 3, 5);
-    addActiveLink(net, 1, 4, 6);
+    addActiveLink(net, 1, 4, 1);
     addActiveLink(net, 2, 4, 9);
 
     return net;
@@ -48,12 +48,12 @@ int testShortestPath(){
 
     int start = 1;
     int stop = 4;
-    int path[NETWORK_MAX_SIZE];
+    int prev[NETWORK_MAX_SIZE];
 
-    double capacity = findShortestPath(net, start, stop, path);
+    double capacity = findShortestPath(net, start, stop, prev);
 
     if(capacity == INFINITY_LENGTH) printf("Path from %d to %d not found\n", start, stop);
-    else printf("Shortest path from %d to %d found with capacity: %.2f\n", start, stop, capacity);
+    else printf("Shortest path from %d to %d found with capacity: %.2f Mbps\n", start, stop, capacity);
 
     dropNetwork(net);
     return 1;
