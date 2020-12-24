@@ -216,13 +216,15 @@ int setLinkState(Network network, int router_1, int router_2, int state){
 int removeLinkState(Network network, int router_1, int router_2){
     if(getLinkState(network, router_1, router_2) == NEGATIVE) return 0; //no link state
 
-    #define removeLinkStateMacro(router_1, router_2){                           \                                                    
+    #define removeLinkStateMacro(router_1, router_2){                           \    
+        /* printf("Chkpt removeLinkStateMacro: %d, %d\n", router_1, router_2);*/\                                                  
         JRB router_1_jrb_state = jrb_find_int(network.linkState, router_1);     \
         if(router_1_jrb_state == NULL) return 0;                                \
         JRB router_1_tree_state = (JRB) jval_v(router_1_jrb_state->val);        \
-        JRB stateJRB = jrb_find_int(router_1_tree_state, router_2);             \                                              
+        JRB stateJRB = jrb_find_int(router_1_tree_state, router_2);             \        
+        /*printf("npath length %d to root: %d\n", router_2, jrb_plength(stateJRB)); */\  
         jrb_delete_node(stateJRB);                                              \ 
-        if(jrb_empty(router_1_tree_state)) jrb_delete_node(router_1_tree_state); \  
+        if(jrb_empty(router_1_tree_state)) jrb_free_tree(router_1_tree_state); \  
     } 
 
     removeLinkStateMacro(router_1,router_2);
@@ -236,12 +238,13 @@ int removeLinkState(Network network, int router_1, int router_2){
 int removeLinkSpeed(Network network, int router_1, int router_2){
     if(getLinkSpeed(network, router_1, router_2) == NEGATIVE) return 0; //no link speed
 
-    #define removeLinkSpeedMacro(router_1, router_2)  {                        \             
+    #define removeLinkSpeedMacro(router_1, router_2)  {                        \      
+        /* printf("Chkpt removeLinkSpeedMacro: %d, %d\n", router_1, router_2); */\       
         JRB router_1_jrb_speed = jrb_find_int(network.linkSpeed, router_1); \        
         JRB router_1_tree_speed = (JRB) jval_v(router_1_jrb_speed->val);    \      
-        JRB speedJRB = jrb_find_int(router_1_tree_speed, router_2);         \     
+        JRB speedJRB = jrb_find_int(router_1_tree_speed, router_2);         \
         jrb_delete_node(speedJRB);                                          \     
-        if(jrb_empty(router_1_tree_speed)) jrb_delete_node(router_1_tree_speed); \                                                                   
+        if(jrb_empty(router_1_tree_speed)) jrb_free_tree(router_1_tree_speed); \                                                                   
     }               
     
     removeLinkSpeedMacro(router_1, router_2);

@@ -36,6 +36,9 @@ int testNetwork(){
     printf("After removeLink, is 1 next to 2:%d\n", hasLink(net, 1, 2));
     addActiveLink(net, 1, 2, 20);
     printf("After re-add, weight between 1 and 2:%.2f\n", getLinkWeight(net, 1, 2));
+    removeRouter(net, 4);
+    printf("After remove rounter 4, is 4 next to 2:%d\n", hasLink(net, 4, 2));
+
     dropNetwork(net);
     return 1;
 }

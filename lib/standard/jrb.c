@@ -52,7 +52,7 @@ static void insert(JRB item, JRB list)	/* Inserts to the end of a list */
   item->flink = list;
 }
  
-static void delete_item(JRB item)		/* Deletes an arbitrary iterm */
+static void jrb_delete_item(JRB item)		/* Deletes an arbitrary iterm */
 {
   item->flink->blink = item->blink;
   item->blink->flink = item->flink;
@@ -407,7 +407,7 @@ void jrb_delete_node(JRB n)
     fprintf(stderr, "Cannot delete the head of an jrb_tree: 0x%x\n", n);
     exit(1);
   }
-  delete_item(n); /* Delete it from the list */
+  jrb_delete_item(n); /* Delete it from the list */
   p = n->parent;  /* The only node */
   if (isroot(n)) {
     p->parent = p;

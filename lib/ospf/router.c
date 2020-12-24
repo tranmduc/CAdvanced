@@ -49,7 +49,7 @@ int hasRouter(Network network, int id){
 
 /** Remove a router along with its links & states.  Return: 1 (success) or 0 (fail)*/
 int removeRouter(Network network, int id){
-    JRB router = getRouterbyID(network, id);
+    JRB router = jrb_find_int(network.router, id);
     if(router == NULL){
         fprintf(stderr, "ERROR: Router with id %d does not exist. Cannot remove it.\n", id);
         return 0;
