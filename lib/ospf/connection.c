@@ -3,6 +3,7 @@
 
 /******************************CONNECTION***************************/
 /** Implementation: connection.c */
+//TODO: Implement this lib
 
 extern int id_generator = 1; //generate id
 

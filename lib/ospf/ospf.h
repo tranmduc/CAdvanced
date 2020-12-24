@@ -265,12 +265,11 @@ int findNextHop(Network network, int start, int stop);
  * Djkistra: path with weight 4-5-6 is better, which can hold 100/6=16,667 Mbps
  * Capacity: Path 5-5-5-5 is better, which can hold 20 Mbps
  * prev: int array pointer of the path (v1->v3->v2)
- * Return: the max_capacity of a path which is < speed_demand, or -max_capacity if no path exceeds speed_demand
- * Or INFINITY_LENGTH if no path from start to stop can be found
+ * Return: the max_capacity of a path  or INFINITY_LENGTH if no path from start to stop can be found
  * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
-double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* prev);
+double findMaxCapacityPath(Network network, int start, int stop, int* prev);
 
 
 
@@ -286,12 +285,21 @@ int relaxShortestPath(Network network, int intermediate_v, int current_des, doub
 int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue);
 
 
-/** Init the d,parent array and the priority queue
+/** Init the d,parent array and the priority queue of shortest path
  * Priority queue is reorganized whenever some v.d() decreases
  * (key, value) = (v.d(), v)
+ * SPF: d[r] = max_int, except d[src] = 0
  * Return: the JRB node of priority queue
  */
-JRB initPriorityQueue(Network network, int start, double* d, int* prev);
+JRB initPriorityQueueSPF(Network network, int start, double* d, int* prev);
+
+/** Init the d,parent array and the priority queue of max cap
+ * Priority queue is reorganized whenever some v.d() decreases
+ * (key, value) = (v.d(), v)
+ * MaxCap: d[r] = min_int, except d[src] = max_int
+ * Return: the JRB node of priority queue
+ */
+JRB initPriorityQueueMaxCap(Network network, int start, double* d, int* prev);
 
 /** Populate the PQ with data from v.d() and network.
  * Return: the JRB node of priority queue

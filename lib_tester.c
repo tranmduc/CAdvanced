@@ -15,11 +15,14 @@ Network initNetwork(){
     addRouter(net, 2, "192.168.1.2");
     addRouter(net, 3, "192.168.1.3");
     addRouter(net, 4, "192.168.1.4");
+    addRouter(net, 5, "192.168.1.5");
+    addRouter(net, 6, "192.168.1.6");
 
-    addActiveLink(net, 1, 2, 40);
-    addActiveLink(net, 1, 3, 5);
-    addActiveLink(net, 1, 4, 1);
-    addActiveLink(net, 2, 4, 9);
+    addActiveLink(net, 1, 2, 4.0);
+    addActiveLink(net, 2, 3, 4.0);
+    addActiveLink(net, 3, 4, 4.0);
+    addActiveLink(net, 1, 5, 3.0);
+    addActiveLink(net, 4, 5, 3.0);
 
     return net;
 }
@@ -30,14 +33,19 @@ int testNetwork(){
 
     printf("Is 1 next to 2:%d\n", hasLink(net, 1, 2));
     printf("Is 1 next to 5:%d\n", hasLink(net, 1, 5));
-    printf("Speed between 3 and 1: %.2f Mbps\n", getLinkSpeed(net, 3, 1));
-    printf("Weight between 2 and 4: %.2f\n", getLinkWeight(net, 2, 4));
+
+    if(getLinkSpeed(net, 3, 1) == -1) printf("No link between 3 and 1\n");
+    else printf("Speed between 3 and 1: %.2f Mbps\n", getLinkSpeed(net, 3, 1));
+
+    if(getLinkWeight(net,2,4) == INFINITY_LENGTH) printf("No link between 2 and 4\n");
+    else printf("Weight between 2 and 4: %.2f\n", getLinkWeight(net, 2, 4));
+
     removeLink(net, 1,2);
-    printf("After removeLink, is 1 next to 2:%d\n", hasLink(net, 1, 2));
+    printf("After removeLink 1-2, is 1 next to 2:%d\n", hasLink(net, 1, 2));
     addActiveLink(net, 1, 2, 20);
     printf("After re-add, weight between 1 and 2:%.2f\n", getLinkWeight(net, 1, 2));
     removeRouter(net, 4);
-    printf("After remove rounter 4, is 4 next to 2:%d\n", hasLink(net, 4, 2));
+    printf("After remove rounter 4, is 4 next to 3:%d\n", hasLink(net, 4, 3));
 
     dropNetwork(net);
     return 1;
@@ -58,9 +66,27 @@ int testShortestPath(){
     dropNetwork(net);
     return 1;
 }
+
+int testMaxCap(){
+    Network net = initNetwork();
+
+    int start = 1;
+    int stop = 4;
+    int prev[NETWORK_MAX_SIZE];
+
+    double capacity = findMaxCapacityPath(net, start, stop, prev);
+
+    if(capacity == INFINITY_LENGTH) printf("Path from %d to %d not found\n", start, stop);
+    else printf("Max capacity path from %d to %d found with capacity: %.2f Mbps\n", start, stop, capacity);
+
+    dropNetwork(net);
+    return 1;
+}
 int main(){
     int testNet = testNetwork();
     int testSPF = testShortestPath();
+    int testmaxcap = testMaxCap();
     printf("Pass testNetwork: %d\n", testNet);
     printf("Pass testShortestPath: %d\n", testSPF);
+    printf("Pass testMaxCap: %d\n", testmaxcap);
 }
