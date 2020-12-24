@@ -71,7 +71,6 @@ int hasVertex(Graph graph, int id){
         return 0;
     }
     return 1;
-
 }
 
 /** Add a directed edge from v1 to v2. Return 1 if success and 0 if not*/
