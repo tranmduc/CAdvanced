@@ -81,23 +81,29 @@ double findPathCapacity(Network network, int start, int stop, int* prev){
  * Return: id of the next hop router. Or -1 (NEGATIVE) if no path is available
 */
 int findNextHop(Network network, int start, int stop){
-    int path[NETWORK_MAX_SIZE];
-    double shortestPath = findShortestPath(network, start, stop, path);
+    int prev[NETWORK_MAX_SIZE];
+    double shortestPath = findShortestPath(network, start, stop, prev);
     if(shortestPath == INFINITY_LENGTH) return NEGATIVE;
-    return path[start];
+    
+    int node = stop;
+    while(prev[node] != start){
+        node = prev[node];
+    } 
+    //prev[node] is equal to start
+    return node;
 }
 
 
 /** Find a path from start to stop with max_capacity, or max(min(speed)) along links in the path
  * Djkistra: path with weight 4-5-6 is better, which can hold 100/6=16,667 Mbps
  * Capacity: Path 5-5-5-5 is better, which can hold 20 Mbps
- * path: int array pointer of the path (v1->v3->v2)
+ * prev: int array pointer of the path (v1->v3->v2)
  * Return: the max_capacity of a path which is < speed_demand, or -max_capacity if no path exceeds speed_demand
  * Or INFINITY_LENGTH if no path from start to stop can be found
  * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
-double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* path){
+double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* prev){
     return INFINITY_LENGTH;
 }
 
@@ -127,7 +133,7 @@ int relaxShortestPath(Network network, int intermediate_v, int current_des, doub
 }
 
 /** Relax an edge to find the max capacity path */
-int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue){
+int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue){
     return 0;
 }
 

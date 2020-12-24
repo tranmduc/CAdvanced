@@ -22,7 +22,7 @@ typedef struct{
 /** Connection: from router_1 to router_2 with a speed demand (in Mbps)
  * Connection_id is needed because we may have more than 1 connection from r1 to r2. Id is auto-generated.
  * router1, router2: two end-points
- * path[] the path of this connection
+ * prev[] the inverse path of this connection
  * Ex: <1, network_A, 4,5, 60> is connection with id 1, network A, from router 4 to 5 with a 60 Mbps speed.
 */
 
@@ -32,7 +32,7 @@ typedef struct{
     int router1;
     int router2;
     double speed_demand;
-    int path[NETWORK_MAX_SIZE];
+    int prev[NETWORK_MAX_SIZE];
 } Connection; 
 
 /** Double linked List of connections*/
@@ -291,7 +291,7 @@ int relaxMaxCapacity(Network network, int intermediate_v, int current_des, doubl
  * (key, value) = (v.d(), v)
  * Return: the JRB node of priority queue
  */
-JRB initPriorityQueue(Network network, int start, double* d, int* path);
+JRB initPriorityQueue(Network network, int start, double* d, int* prev);
 
 /** Populate the PQ with data from v.d() and network.
  * Return: the JRB node of priority queue
@@ -310,5 +310,5 @@ int updatePriorityQueue(JRB priorityQueue, int router, double new_d);
 /** Given a well-established path from start to stop, find its max capacity (or min(link's speed))
 * Return: minimum link speed of links on path (in Mbps); 0 if start == stop; Or NEGATIVE (-1) otherwise
 */
-double findPathCapacity(Network network, int start, int stop, int* path);
+double findPathCapacity(Network network, int start, int stop, int* prev);
 #endif
