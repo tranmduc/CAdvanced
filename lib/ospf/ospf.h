@@ -73,8 +73,8 @@ void printRouterNetwork(Network network);
 
 /** Print links of a network
  * root
- * |- <IP1>: <IP2> <active or not>
- * |- <IP2>: <IP3> <active or not>
+ * |- <IP1>: <IP2> <state>
+ * |- <IP2>: <IP3> <state>
 */
 void printLinkNetwork(Network network);
 
@@ -105,6 +105,10 @@ int removeRouter(Network network, int id);
 
 /******************************LINK***************************/
 /** Implementation: link.c */
+
+
+/** Return 1 if network exists and has r1, r2; 0 otherwhise*/
+int checkExistance(Network network, int router_1, int router_2);
 
 /** Add a link to network.
  * network: a network
@@ -269,13 +273,18 @@ int findNextHop(Network network, int start, int stop);
 double findMaxCapacityPath(Network network, int start, int stop, double speed_demand, int* path);
 
 
+
 /** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 
  * d: array pointer of estimation shortest path from start
  * parent: use to backtrace the path
  * priorityQueue: update the PQ when relax successfully
  * Return: 1 - True if relaxed successfully, 0 - false otherwise
 */
-int relax(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+
+/** Relax an edge to find the max capacity path */
+int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* path, JRB priorityQueue);
+
 
 /** Init the d,parent array and the priority queue
  * Priority queue is reorganized whenever some v.d() decreases
@@ -298,4 +307,8 @@ JRB populatePriorityQueue(Network network, double* d);
 */
 int updatePriorityQueue(JRB priorityQueue, int router, double new_d);
 
+/** Given a well-established path from start to stop, find its max capacity (or min(link's speed))
+* Return: minimum link speed of links on path (in Mbps); 0 if start == stop; Or NEGATIVE (-1) otherwise
+*/
+double findPathCapacity(Network network, int start, int stop, int* path);
 #endif

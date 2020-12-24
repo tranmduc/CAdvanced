@@ -43,7 +43,24 @@ int testNetwork(){
     return 1;
 }
 
+int testShortestPath(){
+    Network net = initNetwork();
+
+    int start = 1;
+    int stop = 4;
+    int path[NETWORK_MAX_SIZE];
+
+    double capacity = findShortestPath(net, start, stop, path);
+
+    if(capacity == INFINITY_LENGTH) printf("Path from %d to %d not found\n", start, stop);
+    else printf("Shortest path from %d to %d found with capacity: %.2f\n", start, stop, capacity);
+
+    dropNetwork(net);
+    return 1;
+}
 int main(){
     int testNet = testNetwork();
+    int testSPF = testShortestPath();
     printf("Pass testNetwork: %d\n", testNet);
+    printf("Pass testShortestPath: %d\n", testSPF);
 }

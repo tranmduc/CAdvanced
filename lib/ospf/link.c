@@ -224,7 +224,10 @@ int removeLinkState(Network network, int router_1, int router_2){
         JRB stateJRB = jrb_find_int(router_1_tree_state, router_2);             \        
         /*printf("npath length %d to root: %d\n", router_2, jrb_plength(stateJRB)); */\  
         jrb_delete_node(stateJRB);                                              \ 
-        if(jrb_empty(router_1_tree_state)) jrb_free_tree(router_1_tree_state); \  
+        if(jrb_empty(router_1_tree_state)){                      \         
+            free(router_1_tree_state);                          \
+            jrb_delete_node(router_1_jrb_state);                 \         
+        }                                                       \
     } 
 
     removeLinkStateMacro(router_1,router_2);
@@ -244,8 +247,11 @@ int removeLinkSpeed(Network network, int router_1, int router_2){
         JRB router_1_tree_speed = (JRB) jval_v(router_1_jrb_speed->val);    \      
         JRB speedJRB = jrb_find_int(router_1_tree_speed, router_2);         \
         jrb_delete_node(speedJRB);                                          \     
-        if(jrb_empty(router_1_tree_speed)) jrb_free_tree(router_1_tree_speed); \                                                                   
-    }               
+        if(jrb_empty(router_1_tree_speed)){                      \         
+            free(router_1_tree_speed);                          \
+            jrb_delete_node(router_1_jrb_speed);                 \         
+        }                                                            \                         
+    }                                                        \
     
     removeLinkSpeedMacro(router_1, router_2);
     removeLinkSpeedMacro(router_2, router_1);                                                         

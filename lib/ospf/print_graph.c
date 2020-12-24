@@ -17,8 +17,8 @@ void printRouterNetwork(Network network){
 
 /** Print links of a network
  * root
- * |- <IP1>: <IP2> <active or not>
- * |- <IP2>: <IP3> <active or not>
+ * |- <IP1>: <IP2> <state>
+ * |- <IP2>: <IP3> <state>
 */
 void printLinkNetwork(Network network){
     return;
