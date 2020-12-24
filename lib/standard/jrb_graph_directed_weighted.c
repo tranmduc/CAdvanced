@@ -118,7 +118,6 @@ int addDirectedEdge(Graph graph, int v1, int v2, double weight){
     jrb_insert_int(vertex_1_tree, v2, new_jval_d(weight)); //add v2 to v1's tree
     printf("Add edge from %d to %d with weight %.2f sucessfully\n", v1,v2, weight); //DEBUG
     return 1;
-    
 }
 
 /** Add a unit directed edge (weight = 1) from v1 to v2. Return 1 if success and 0 if not*/

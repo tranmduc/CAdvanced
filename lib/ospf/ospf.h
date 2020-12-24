@@ -1,7 +1,8 @@
 #ifndef	_OSPF_H_
 #define	_OSPF_H_
 
-#include "jrb.h"
+// #include "jrb.h"
+#include "../standard/jrb.h"
 
 #define NETWORK_MAX_SIZE 100
 #define INFINITY_LENGTH 999999
@@ -49,7 +50,9 @@ extern int id_generator = 1; //generate id
 
 /** Initialization */
 Network createNetwork();
-Network importNetworkFromFile(char* filename);
+int importRouterFromFile(Network network, char* filename);
+int importConnectionFromFile(Network network, char* filename);
+// Network importNetworkFromFile(char* filename);
 /** Free the network*/
 void dropNetwork(Network network);
 
