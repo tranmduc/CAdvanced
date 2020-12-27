@@ -87,21 +87,23 @@ int testSimulate(){
     Network net = initNetwork();
     int start = 1;
     int stop = 5;
+
+    //Three scenarios: first is shortest path, second is using two connections, third is not enough cap
     double speed_demand1 = 2;
     double speed_demand2 = 4;
     double speed_demand3 = 8;
 
+    
     ConnectionList list = createConnection(net, start, stop, speed_demand1);
     if(list == NULL) return 0;
     deactivateAllConnections(list, start, stop);
-
+    printf("--------------------------\n");
     ConnectionList list2 = createConnection(net, start, stop, speed_demand2);
     if(list2 == NULL) return 0;
-    deactivateAllConnections(list, start, stop);
-
+    deactivateAllConnections(list2, start, stop);
+    printf("--------------------------\n");
     ConnectionList list3 = createConnection(net, start, stop, speed_demand3);
-    if(list2 != NULL) return 0;
-    deactivateAllConnections(list, start, stop);
+    if(list3 != NULL) return 0;
 
     dropNetwork(net);
 

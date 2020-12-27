@@ -93,7 +93,7 @@ double findMaxCapacityPath(Network network, int start, int stop, int* prev){
     //for (size_t i = 1; i < 5; i++)printf("d[%d] = %.2f\n", i, d[i]); //DEBUG
 
     //can not reach destination
-    if (d[stop] == INFINITY_LENGTH) return INFINITY_LENGTH;
+    if (d[stop] == INFINITY_LENGTH || d[stop] < 0) return INFINITY_LENGTH;
 
     //can reach destination, find path's capacity and return
     return findPathCapacity(network, start, stop, prev);  
@@ -113,6 +113,7 @@ double findPathCapacity(Network network, int start, int stop, int* prev){
     double linkSpeed;
 
     while(node1 != start){
+        //printf("findPathCapacity: (node1,node2)=(%d,%d)\n", node1, node2);
         linkSpeed = getLinkSpeed(network, node2, node1);
         if(minSpeed > linkSpeed) minSpeed = linkSpeed;
         //move nodes backwards

@@ -1,5 +1,6 @@
 #include "ospf.h";
 #include<stdio.h>;
+#include<stdlib.h>;
 
 /******************************CONNECTION***************************/
 /** Implementation: connection.c */
@@ -17,13 +18,25 @@ Connection initConnection(Network network, int router1, int router2, double spee
     con.router1 = router1;
     con.router2 = router2;
     con.speed_demand = speed_demand;
-    con.prev = prev;
+
+    //copy content of prev
+    int node = router2;
+    printf("connectionPath: %d",node);
+
+    while(node != router1){
+        con.prev[node] = prev[node];
+        node = prev[node];
+        printf("<-%d",node);
+    }   
+    printf("\n");
+
+    //printf("Con #%d prev pointer addr: %.p\n", con.id, prev);
     return con;
 }
 
 /** Start a list of connection from start to stop - mimicking packet switching
  * If speed_demand < capacity, then one connection is created only
- * If not, then the connection will be split into a list of Connection[]
+ * If not, then the connection will be split into a list of Connection[] (implemented by dll - double linked list)
  * Return: the list of Connection if sucess or NULL if failed
  * ------------------
  * Algo:
@@ -63,18 +76,30 @@ ConnectionList createConnection(Network network, int start, int stop, double spe
         //printf("createConnection: Ckpt 2.2 - maxCap\n");
         //Step 2: findMaxCapacityPath
         double maxCapacity = 0;
+
         while( (speed_demand > 0) && (maxCapacity != INFINITY_LENGTH) ){
             int prev2[NETWORK_MAX_SIZE];
+
+            //printf("createConnection: Ckpt 3.1 - speed_demand: %.2f, start %d stop %d\n", speed_demand, start, stop);
+
             maxCapacity = findMaxCapacityPath(network, start, stop, prev2);
+            if(maxCapacity == INFINITY_LENGTH) break;
 
-            printf("createConnection: Ckpt 3 - maxCap: %.2f, speed_demand: %.2f\n", maxCapacity, speed_demand);
-
+            //printf("createConnection: Ckpt 3.2 - maxcap: %.2f\n", maxCapacity);
+            
             double con_speed = (speed_demand < maxCapacity) ? speed_demand : maxCapacity; //min
 
             Connection con = initConnection(network, start, stop, con_speed, prev2);
+
+            //printf("createConnection: Ckpt 3.3 - con %d inited\n", con.id);
+
             activateConnection(con);
+
+            //printf("createConnection: Ckpt 3.4 - con %d activated %d\n", con.id, activateConnection(con));
+
             dll_append(return_list, con);
             if (maxCapacity != INFINITY_LENGTH) speed_demand -= con_speed;
+
         }
 
         //terminate:
@@ -110,6 +135,7 @@ int activateConnection(Connection connection){
     while (node1 != connection.router1){
         //modify speed & state
         //printf("activateConnection: start %d to stop %d\n", node2, node1); //DEBUG
+
         double old_speed = getLinkSpeed(connection.network, node2, node1);
         double new_speed = old_speed - connection.speed_demand;
 
@@ -120,19 +146,23 @@ int activateConnection(Connection connection){
             if(new_speed == 0){
                 printf("Used up capacity of link %d to %d. Change linkState to BUSY\n", node2, node1);
                 ret *= setLinkState(connection.network, node2, node1, BUSY);
+                //printf("activateConnection: Link state %d to %d set to BUSY\n", node2, node1);
             }
             ret *= setLinkSpeed(connection.network, node2, node1, new_speed);
+            //printf("activateConnection: Link speed %d to %d set to %.2f\n", node2, node1, new_speed);
         }
         
         //traverse
         node1 = node2;
         if(node1 != connection.router1) node2 = connection.prev[node2];
     }
+
+    //printf("activateConnection: Out loop, ret=%d\n", ret);
     
     return ret;
 }
 
-//TODO: Still core dump here
+
 /** Stop a specific connection  (not delete it)
  * Return: 1 if sucess or 0 if failed */
 int deactivateConnection(Connection connection){
@@ -144,6 +174,8 @@ int deactivateConnection(Connection connection){
     int ret = 1; //return value. False if any setLink fails
 
     while (node1 != connection.router1){
+        //printf("deactivateConnection: start %d to stop %d\n", node2, node1); //DEBUG
+
         //modify speed & state
         double old_speed = getLinkSpeed(connection.network, node2, node1);
         double new_speed = old_speed + connection.speed_demand;
@@ -159,6 +191,8 @@ int deactivateConnection(Connection connection){
         if(node1 != connection.router1) node2 = connection.prev[node2];
     }
     
+    //printf("deactivateConnection: Out loop, ret=%d\n", ret);
+
     return ret;
 }
 
@@ -168,6 +202,11 @@ int deactivateConnection(Connection connection){
  * Return: 1 if sucess or 0 if failed
 */
 int deactivateAllConnections(ConnectionList list, int start, int stop){
+    if(dll_is_empty(list)){
+        fprintf(stderr, "Err: ConnectionList is empty\n");
+        return 0;
+    }
+
     int ret = 1;
     ConnectionList node = dll_find_next_connection_by_start_stop(list, start, stop);
     while(node != NULL){
@@ -176,5 +215,7 @@ int deactivateAllConnections(ConnectionList list, int start, int stop){
         //next node
         node = dll_find_next_connection_by_start_stop(list, start, stop);
     }
+
+    //printf("deactiveAll: out loop, ret=%d\n", ret);
     return ret;
 }

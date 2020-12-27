@@ -32,7 +32,7 @@ typedef struct{
     int router1;
     int router2; 
     double speed_demand;
-    int* prev;
+    int prev[NETWORK_MAX_SIZE];
 } Connection; 
 
 /** Double linked List of connections*/

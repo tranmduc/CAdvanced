@@ -49,7 +49,7 @@ int addDirectedLink(Network network, int router_1, int router_2, double speed, i
 /** Return 1 if network exists and has r1, r2; 0 otherwhise
  * Also printf(stderr) corresponding errors.
 */
-int checkExistance(Network network, int router_1, int router_2){
+int checkExistance(Network network, int router_1, int router_2){    
     if (network.router == NULL){
         fprintf(stderr, "ERROR: The network is empty. Please add router first before adding links\n");
         return 0;
@@ -57,10 +57,12 @@ int checkExistance(Network network, int router_1, int router_2){
     //check if v1,v2 exists in graph.vertices
     if(!hasRouter(network, router_1)){
         fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", router_1);
+        printf("checkExistance: %d to %d\n", router_1, router_2);
         return 0;
     }
     if(!hasRouter(network, router_2)){
         fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", router_2);
+        printf("checkExistance: %d to %d\n", router_1, router_2);
         return 0;
     }
     return 1;
@@ -141,6 +143,8 @@ double getLinkSpeed(Network network, int router_1, int router_2){
  * speed: in Mbps
  * Return: 1 (success) or 0 (fail)*/
 int setLinkSpeed(Network network, int router_1, int router_2, double speed){
+    //printf("setLinkSpeed: %d to %d with speed %.2f\n", router_1, router_2, speed);
+
     if(getLinkSpeed(network, router_1, router_2) == -1) return 0;
     if (speed < 0 ){
         fprintf(stderr, "does not accept negative speed %.2f from %d to %d. Please try again\n", speed, router_1, router_2);
@@ -184,6 +188,8 @@ int getLinkState(Network network, int router_1, int router_2){
  * state: either 0 (inactive) or 1 (active) or 2 (busy). other value not accepted.
  * Return: 1 (success) or 0 (fail)*/
 int setLinkState(Network network, int router_1, int router_2, int state){
+    //printf("setLinkState: %d to %d with state %d\n", router_1, router_2, state);
+
     if(checkExistance(network, router_1, router_2) == 0) return 0;
     //check state:
     switch (state){
