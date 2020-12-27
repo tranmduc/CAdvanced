@@ -64,21 +64,14 @@ extern Connection dll_val(ConnectionList con){
   return con->val;
 }
 
-
-/** Find a node that has the given connection. Return the node or NULL if not found.*/
-ConnectionList dll_find_node(ConnectionList l, Connection con){
-  ConnectionList travel;
-  jrb_traverse(travel, l){
-    if(travel->val.id == con.id) return travel;
+/** Find the next node given start, stop endpoint. Return NULL if not found*/
+extern ConnectionList dll_find_next_connection_by_start_stop(ConnectionList list, int start, int stop){
+  ConnectionList node;
+  dll_traverse(node, list){
+    if((node->val.router1 == start) && (node->val.router2 == stop)){
+      return node;
+    }
   }
-  return NULL;
-}
 
-/** Find & delete node that has the given connection. Return 1 (success) or 0 (failed) */
-int dll_find_and_delete_node(ConnectionList l, Connection con){
-  ConnectionList found = dll_find_node(l, con);
-  if(found == NULL) return 0;
-  //found
-  free(found);
-  return 1;
+  return NULL;
 }

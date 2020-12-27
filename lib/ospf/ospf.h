@@ -183,19 +183,22 @@ int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE
 */
 ConnectionList createConnection(Network network, int start, int stop, double speed_demand);
 
-/** Start a connection. Modify the graph's edges
+/** Start a connection. Modify the graph's linkSpeed & linkState.
+ * Given: all graph's links are active and has enough capacity
  * Return: 1 if sucess or 0 if failed
 */
-int activateConnection(Connection *connection);
+int activateConnection(Connection connection);
 
 /** Stop a specific connection  (not delete it)
  * Return: 1 if sucess or 0 if failed */
-int deactivateConnection(Connection *connection);
+int deactivateConnection(Connection connection);
 
-/** Stop all connections from start to stop (not delete it)
+/** Stop all connections from start to stop & delete them
+ * list: the connectionList from which connections are fetched & deleted
+ * start, stop: endpoints of connections
  * Return: 1 if sucess or 0 if failed
 */
-int deactivateAllConnections(Network network, int start, int stop);
+int deactivateAllConnections(ConnectionList list, int start, int stop);
 
 
 
@@ -219,13 +222,10 @@ extern void dll_insert_a(ConnectionList, Connection);
 extern void dll_delete_node(ConnectionList);
 extern int dll_is_empty(ConnectionList);
 
-/** Find a node that has the given connection. Return the node or NULL if not found.*/
-extern ConnectionList dll_find_node(ConnectionList, Connection);
-
-/** Find & delete node that has the given connection. Return 1 (success) or 0 (failed) */
-extern int dll_find_and_delete_node(ConnectionList, Connection);
-
 extern Connection dll_val(ConnectionList);
+
+/** Find the next node given start, stop endpoint. Return NULL if not found*/
+extern ConnectionList dll_find_next_connection_by_start_stop(ConnectionList, int, int);
 
 #define dll_first(d) ((d)->flink)
 #define dll_next(d) ((d)->flink)
