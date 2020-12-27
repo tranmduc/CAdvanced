@@ -59,7 +59,6 @@ double findShortestPath(Network network, int start, int stop, int* prev){
  * Capacity: Path 5-5-5-5 is better, which can hold 20 Mbps
  * prev: int array pointer of the path (v1->v3->v2)
  * Return: the max_capacity of a path or INFINITY_LENGTH if no path from start to stop can be found
- * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
 double findMaxCapacityPath(Network network, int start, int stop, int* prev){
@@ -116,7 +115,7 @@ double findPathCapacity(Network network, int start, int stop, int* prev){
     while(node1 != start){
         linkSpeed = getLinkSpeed(network, node2, node1);
         if(minSpeed > linkSpeed) minSpeed = linkSpeed;
-        //move nodes forward
+        //move nodes backwards
         node1 = node2;
         if(node1 != start) node2 = prev[node2];
     }

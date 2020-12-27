@@ -46,7 +46,9 @@ int addDirectedLink(Network network, int router_1, int router_2, double speed, i
     
 }
 
-/** Return 1 if network exists and has r1, r2; 0 otherwhise*/
+/** Return 1 if network exists and has r1, r2; 0 otherwhise
+ * Also printf(stderr) corresponding errors.
+*/
 int checkExistance(Network network, int router_1, int router_2){
     if (network.router == NULL){
         fprintf(stderr, "ERROR: The network is empty. Please add router first before adding links\n");
@@ -140,8 +142,8 @@ double getLinkSpeed(Network network, int router_1, int router_2){
  * Return: 1 (success) or 0 (fail)*/
 int setLinkSpeed(Network network, int router_1, int router_2, double speed){
     if(getLinkSpeed(network, router_1, router_2) == -1) return 0;
-    if (speed <=0 ){
-        fprintf(stderr, "does not accept negative speed. Please try again\n");
+    if (speed < 0 ){
+        fprintf(stderr, "does not accept negative speed %.2f from %d to %d. Please try again\n", speed, router_1, router_2);
         return 0;
     }
 

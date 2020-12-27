@@ -82,11 +82,34 @@ int testMaxCap(){
     dropNetwork(net);
     return 1;
 }
+
+int testSimulate(){
+    Network net = initNetwork();
+    int start = 1;
+    int stop = 5;
+    double speed_demand1 = 2;
+    double speed_demand2 = 4;
+    double speed_demand3 = 8;
+
+    ConnectionList list = createConnection(net, start, stop, speed_demand1);
+    if(list == NULL) return 0;
+    deactivateAllConnections(list, start, stop);
+
+    ConnectionList list2 = createConnection(net, start, stop, speed_demand2);
+    if(list2 == NULL) return 0;
+    deactivateAllConnections(list, start, stop);
+
+    ConnectionList list3 = createConnection(net, start, stop, speed_demand3);
+    if(list2 != NULL) return 0;
+    deactivateAllConnections(list, start, stop);
+
+    dropNetwork(net);
+
+    return 1;
+}
 int main(){
-    int testNet = testNetwork();
-    int testSPF = testShortestPath();
-    int testmaxcap = testMaxCap();
-    printf("Pass testNetwork: %d\n", testNet);
-    printf("Pass testShortestPath: %d\n", testSPF);
-    printf("Pass testMaxCap: %d\n", testmaxcap);
+    // printf("Pass testNetwork: %d\n", testNetwork());
+    // printf("Pass testShortestPath: %d\n", testShortestPath());
+    // printf("Pass testMaxCap: %d\n", testMaxCap());
+    printf("Pass testSimulate: %d\n", testSimulate());
 }

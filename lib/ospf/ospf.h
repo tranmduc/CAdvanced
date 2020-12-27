@@ -30,9 +30,9 @@ typedef struct{
     int id;
     Network network;
     int router1;
-    int router2;
+    int router2; 
     double speed_demand;
-    int prev[NETWORK_MAX_SIZE];
+    int* prev;
 } Connection; 
 
 /** Double linked List of connections*/
@@ -107,7 +107,9 @@ int removeRouter(Network network, int id);
 /** Implementation: link.c */
 
 
-/** Return 1 if network exists and has r1, r2; 0 otherwhise*/
+/** Return 1 if network exists and has r1, r2; 0 otherwhise
+ * Also printf(stderr) corresponding errors.
+*/
 int checkExistance(Network network, int router_1, int router_2);
 
 /** Add a link to network.
@@ -168,13 +170,19 @@ int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE
 /******************************CONNECTION***************************/
 /** Implementation: connection.c */
 
+/** Return a connection object with:
+ * auto-incremental id
+ * router1 < router2
+*/
+Connection initConnection(Network network, int router1, int router2, double speed_demand, int* prev);
+
 /** Start a list of connection from start to stop - mimicking packet switching
  * If speed_demand < capacity, then one connection is created only
  * If not, then the connection will be split into a list of Connection[]
  * Return: the list of Connection if sucess or NULL if failed
  * ------------------
  * Algo:
- * Step 1: findShortestPath, if speed_demand is smaller thatn shortestPath's capacity, then choose this path
+ * Step 1: findShortestPath, if speed_demand is smaller than shortestPath's capacity, then choose this path
  * Step 2: if not, then findMaxCapacityPath. If return positive, OK; negative, to step 3
  * Step 3: Split connection into one connection with max_capacity speed demand is step 2.
  * Activate this connection (meaning modify all links' speed along the max_capacity path)
