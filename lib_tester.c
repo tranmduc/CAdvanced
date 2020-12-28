@@ -109,9 +109,19 @@ int testSimulate(){
 
     return 1;
 }
+
+int testPrint(){
+    Network net = initNetwork();
+    printRouterNetwork(net);
+    printLinkNetwork(net);
+    printNetwork(net);
+    return 1;
+}
+
 int main(){
     // printf("Pass testNetwork: %d\n", testNetwork());
     // printf("Pass testShortestPath: %d\n", testShortestPath());
     // printf("Pass testMaxCap: %d\n", testMaxCap());
-    printf("Pass testSimulate: %d\n", testSimulate());
+    // printf("Pass testSimulate: %d\n", testSimulate());
+    testPrint();
 }
