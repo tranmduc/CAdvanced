@@ -6,7 +6,7 @@ all: lib_tester
 	make clean
 
 ############### Executable
-lib_tester: lib_tester.o network.o connection.o dll_connection.o link.o print_graph.o path_algo.o router.o jrb.o jval.o
+lib_tester: lib_tester.o network.o connection.o dll_connection.o link.o import.o print_graph.o path_algo.o router.o jrb.o jval.o
 	${CC} $^ -o $@
 
 lib_tester.o: lib_tester.c
@@ -34,6 +34,8 @@ path_algo.o: lib/ospf/path_algo.c
 router.o: lib/ospf/router.c
 	$(CC) -c $<	
 
+import.o: lib/ospf/import.c
+	$(CC) -c $<	
 
 ############### Standard Libs
 jrb.o: lib/standard/jrb.c 
