@@ -118,10 +118,22 @@ int testPrint(){
     return 1;
 }
 
+int testReadFile() {
+    Network net = createNetwork();
+
+    importNetworkFromFile(net, "./data/router.txt");
+    importLinkFromFile(net, "./data/connection.txt");
+    printRouterNetwork(net);
+    printLinkNetwork(net);
+    printNetwork(net);
+    return 1;
+}
+
 int main(){
     // printf("Pass testNetwork: %d\n", testNetwork());
     // printf("Pass testShortestPath: %d\n", testShortestPath());
     // printf("Pass testMaxCap: %d\n", testMaxCap());
     // printf("Pass testSimulate: %d\n", testSimulate());
-    testPrint();
+    // testPrint();
+    testReadFile();
 }

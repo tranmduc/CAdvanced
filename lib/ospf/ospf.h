@@ -53,8 +53,8 @@ void dropNetwork(Network network);
 
 /******************************IMPORT***************************/
 /** Implementation: import.c - Hung */
-Network importNetworkFromFile(char* filename);
-
+Network importNetworkFromFile(Network net, char* filename);
+Network importLinkFromFile(Network network, char  *filename);
 
 /******************************PRINTING***************************/
 /** Implementation: print_graph.c - Duc */
