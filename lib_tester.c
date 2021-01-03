@@ -118,15 +118,25 @@ int testPrint(){
     return 1;
 }
 
-int testReadFile() {
-    Network net = createNetwork();
+// int testReadFile() {
+//     Network net = createNetwork();
 
-    importNetworkFromFile(net, "./data/router.txt");
-    importLinkFromFile(net, "./data/connection.txt");
-    printRouterNetwork(net);
-    printLinkNetwork(net);
-    printNetwork(net);
-    return 1;
+//     importNetworkFromFile(net, "./data/router.txt");
+//     // importLinkFromFile(net, "./data/connection.txt");
+//     printRouterNetwork(net);
+//     // printLinkNetwork(net);
+//     // printNetwork(net);
+//     return 1;
+// }
+
+int testShowLinkStateTable(){
+    Network net = initNetwork();
+    showLinkState(net);
+}
+
+int testShowForwardingTable(){
+    Network net = initNetwork();
+    showForwarding(net);
 }
 
 int main(){
@@ -135,5 +145,7 @@ int main(){
     // printf("Pass testMaxCap: %d\n", testMaxCap());
     // printf("Pass testSimulate: %d\n", testSimulate());
     // testPrint();
-    testReadFile();
+    // testReadFile();
+    // testShowLinkStateTable();
+    testShowForwardingTable();
 }

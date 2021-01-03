@@ -9,15 +9,16 @@
 /** Given the network, print all routers & links */
 void printNetwork(Network network){
     JRB node;
-    int count = 0;
+    // int count = 0;
 
     printf("\nNetwork\n");
 
-    jrb_traverse(node, network.router){
-        count ++;
-    }
+    // jrb_traverse(node, network.router){
+    //     count ++;
+    // }
 
-    int* arr = malloc(count);
+    // int* arr = malloc(count);
+    int arr[NETWORK_MAX_SIZE];
     int size = 0;
 
     jrb_traverse(node, network.router){
@@ -41,7 +42,7 @@ void printNetwork(Network network){
         }   
     }
 
-    free(arr);
+    // free(arr);
     
     return;
 }
@@ -68,15 +69,16 @@ void printRouterNetwork(Network network){
 */
 void printLinkNetwork(Network network){
     JRB node;
-    int count = 0;
+    // int count = 0;
 
     printf("\nLink Network\n");
 
-    jrb_traverse(node, network.linkState){
-        count ++;
-    }
+    // jrb_traverse(node, network.linkState){
+    //     count ++;
+    // }
 
-    int* arr = malloc(count);
+    // int* arr = malloc(count);
+    int arr[NETWORK_MAX_SIZE];
     int size = 0;
 
     jrb_traverse(node, network.linkState){
@@ -95,7 +97,43 @@ void printLinkNetwork(Network network){
         }
     }
 
-    free(arr);
+    // free(arr);
     
+    return;
+}
+
+/*Show link state table */
+void showLinkState(Network network){
+    printLinkNetwork(network);
+}
+
+/*Show forwarding table */
+void showForwarding(Network network){
+    JRB node;
+
+    int arr[NETWORK_MAX_SIZE];
+    int size = 0;
+
+    jrb_traverse(node, network.router){
+        arr[size] = jval_i(node->key);
+        size++;
+    }
+    printf("\nForwarding Table Network\n");
+    jrb_traverse(node, network.router){
+        int stop = jval_i(node->key);
+        for(int i = 0; i < size; i++){
+            if(stop != arr[i]){
+                int start = arr[i];
+                int nextHop = findNextHop(network, start, stop);
+                char* startIp = getRouterIPbyID(network, start);
+                if(nextHop != -1){
+                    printf("<Des: IP%d> <Src: IP%d - %s> <Next hop: %d>\n", stop, start, startIp, nextHop);
+                }else{
+                    printf("<Des: IP%d> <Src: IP%d - %s> <Next hop: Not Available>\n", stop, start, startIp);
+                }               
+            }
+        }
+        
+    }
     return;
 }

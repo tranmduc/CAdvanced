@@ -53,8 +53,8 @@ void dropNetwork(Network network);
 
 /******************************IMPORT***************************/
 /** Implementation: import.c - Hung */
-Network importNetworkFromFile(Network net, char* filename);
-Network importLinkFromFile(Network network, char  *filename);
+// Network importNetworkFromFile(Network net, char* filename);
+// Network importLinkFromFile(Network network, char  *filename);
 
 /******************************PRINTING***************************/
 /** Implementation: print_graph.c - Duc */
@@ -77,7 +77,8 @@ void printRouterNetwork(Network network);
  * |- <IP2>: <IP3> <state>
 */
 void printLinkNetwork(Network network);
-
+void showLinkState(Network network);
+void showForwarding(Network network);
 
 /******************************ROUTER***************************/
 /** Implementation: router.c */
