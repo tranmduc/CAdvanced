@@ -134,5 +134,6 @@ int main(){
     // printf("Pass testShortestPath: %d\n", testShortestPath());
     // printf("Pass testMaxCap: %d\n", testMaxCap());
     // printf("Pass testSimulate: %d\n", testSimulate());
-    testPrint();
+    // testPrint();
+    testReadFile();
 }
