@@ -209,6 +209,7 @@ int deactivateConnection(Connection connection);
  * Return: 1 if sucess or 0 if failed
 */
 int deactivateAllConnections(ConnectionList list, int start, int stop);
+void simulate(Network net, int start, int stop, double speed_demand);
 
 
 

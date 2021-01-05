@@ -138,11 +138,15 @@ int testShowForwardingTable(Network net){
    showForwarding(net);
 }
 
+void testSimulation(Network net, int start, int stop, double speed_demand){
+   simulate(net, start, stop, speed_demand);
+}
+
 int main(){
    Network net = testReadFile();
    // printf("Pass testNetwork: %d\n", testNetwork());
    // printf("Pass testShortestPath: %d\n", testShortestPath());
    // printf("Pass testMaxCap: %d\n", testMaxCap());
    // printf("Pass testSimulate: %d\n", testSimulate());
-   testSimulate(net);
+   testSimulation(net, 2, 1, 2);
 }

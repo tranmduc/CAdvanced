@@ -219,3 +219,8 @@ int deactivateAllConnections(ConnectionList list, int start, int stop){
     //printf("deactiveAll: out loop, ret=%d\n", ret);
     return ret;
 }
+
+void simulate(Network net, int start, int stop, double speed_demand){
+    ConnectionList list = createConnection(net, start, stop, speed_demand);
+    if(list == NULL) return;
+}
