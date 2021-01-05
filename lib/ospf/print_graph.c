@@ -92,7 +92,7 @@ void printLinkNetwork(Network network){
             if(hasLink(network, arr[i], arr[j])){
                 char* ip2 = getRouterIPbyID(network, arr[j]);
                 int state = getLinkState(network, arr[i], arr[j]);
-                printf("<IP%d - %s>: <IP%d - %s> <State - %d>\n", arr[i], ip1, arr[j], ip2, state);
+                printf("<IP%d - %s>: <IP%d - %s> <State - %d> \n", arr[i], ip1, arr[j], ip2, state);
             }
         }
     }

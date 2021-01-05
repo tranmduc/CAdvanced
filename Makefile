@@ -2,17 +2,24 @@
 
 CC = gcc
 
-all: lib_tester
+all: lib_tester main
 	make clean
 
 ############### Executable
-lib_tester: lib_tester.o network.o connection.o dll_connection.o link.o print_graph.o path_algo.o router.o jrb.o jval.o import.o
+main: main.o network.o connection.o dll_connection.o link.o import.o print_graph.o path_algo.o router.o jrb.o jval.o
+	$(CC) $^ -o $@
+############### OSPF Libs 
+main.o: main.c
+	$(CC) -c $<
+
+lib_tester: lib_tester.o network.o connection.o dll_connection.o link.o import.o print_graph.o path_algo.o router.o jrb.o jval.o
 	${CC} $^ -o $@
 
 lib_tester.o: lib_tester.c
 	$(CC) -c $<
 
-############### OSPF Libs
+
+	
 network.o: lib/ospf/network.c
 	$(CC) -c $<
 
@@ -32,19 +39,19 @@ path_algo.o: lib/ospf/path_algo.c
 	$(CC) -c $<
 
 router.o: lib/ospf/router.c
-	$(CC) -c $<
+	$(CC) -c $<	
 
 import.o: lib/ospf/import.c
-	$(CC) -c $<
+	$(CC) -c $<	
 
 ############### Standard Libs
-jrb.o: lib/standard/jrb.c
+jrb.o: lib/standard/jrb.c 
 	$(CC) -c $<
 
-jval.o: lib/standard/jval.c
+jval.o: lib/standard/jval.c 
 	$(CC) -c $<
 
-sort.o: lib/standard/sort.c
+sort.o: lib/standard/sort.c 
 	$(CC) -c $<
 
 

@@ -118,34 +118,34 @@ int testPrint(){
    return 1;
 }
 
-int testReadFile() {
+Network testReadFile() {
     Network net = createNetwork();
 
-    net = importRouterFromFile(net, "./data/router.txt");
-    net = importLinkFromFile(net, "./data/connection.txt");
-    printRouterNetwork(net);
-    printLinkNetwork(net);
-    printNetwork(net);
-    return 1;
+    importRouterFromFile(net, "./data/router.txt");
+    importLinkFromFile(net, "./data/connection.txt");
+   //  printRouterNetwork(net);
+   //  printLinkNetwork(net);
+   //  printNetwork(net);
+    return net;
 }
 
-int testShowLinkStateTable(){
-   Network net = initNetwork();
+int testShowLinkStateTable(Network net){
+   // Network net = initNetwork();
    showLinkState(net);
 }
 
-int testShowForwardingTable(){
-   Network net = initNetwork();
+int testShowForwardingTable(Network net){
+   // Network net = initNetwork();
    showForwarding(net);
 }
 
 int main(){
-   // printf("Pass testNetwork: %d\n", testNetwork());
-   // printf("Pass testShortestPath: %d\n", testShortestPath());
-   // printf("Pass testMaxCap: %d\n", testMaxCap());
-   // printf("Pass testSimulate: %d\n", testSimulate());
+   printf("Pass testNetwork: %d\n", testNetwork());
+   printf("Pass testShortestPath: %d\n", testShortestPath());
+   printf("Pass testMaxCap: %d\n", testMaxCap());
+   printf("Pass testSimulate: %d\n", testSimulate());
    //  testPrint();
-    testReadFile();
-//     testShowLinkStateTable();
-   //testShowForwardingTable();
+   // Network net = testReadFile();
+   //  testShowLinkStateTable(net);
+   // testShowForwardingTable(net);
 }

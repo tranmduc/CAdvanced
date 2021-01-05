@@ -18,7 +18,7 @@ int addRouter(Network network, int id, char* IP){
     }
 
     //key not found, create new key
-    JRB new_node = jrb_insert_int(network.router, id, new_jval_s(IP));
+    JRB new_node = jrb_insert_int(network.router, id, new_jval_s(strdup(IP)));
     //printf("Add router %d with name %s to network successfully\n", id, jval_s(new_node->val)); //DEBUG
     return;
 }
