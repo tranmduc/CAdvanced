@@ -69,26 +69,26 @@ void printRouterNetwork(Network network){
 */
 void printLinkNetwork(Network network){
     JRB node;
-    // int count = 0;
+    int count = 0;
 
     printf("\nLink Network\n");
 
-    // jrb_traverse(node, network.linkState){
-    //     count ++;
-    // }
+    jrb_traverse(node, network.linkState){
+        count ++;
+    }
 
     // int* arr = malloc(count);
     int arr[NETWORK_MAX_SIZE];
     int size = 0;
 
-    jrb_traverse(node, network.linkState){
+    jrb_traverse(node, network.router){
         arr[size] = jval_i(node->key);
         size++;
     }
-    printf("%d\n", size);
-    for(int i = 0; i < size-1; i++){
+
+    for(int i = 0; i < count; i++){
         char* ip1 = getRouterIPbyID(network, arr[i]);
-        for(int j = i+1; j < size; j++){
+        for(int j = 0; j < size; j++){
             if(hasLink(network, arr[i], arr[j])){
                 char* ip2 = getRouterIPbyID(network, arr[j]);
                 int state = getLinkState(network, arr[i], arr[j]);
