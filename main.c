@@ -21,8 +21,12 @@ int main(){
     printf("4. Show all link state table\n");
     printf("5. Find shortest path\n");
     printf("6. Find path with max capacity\n");
-    printf("7. Modify network\n");
-
+    printf("7. Add router\n");
+    printf("8. Add connection\n");
+    printf("9. Modify connection state\n");
+    printf("10. Modify connection speed\n");
+    printf("11. Exit\n");
+  
     do{
       printf("Enter: ");
       scanf(" %d", &op);
@@ -50,11 +54,11 @@ int main(){
       break;
 
     case  3:
-      showForwarding(net);
+      showLinkState(net);  
       break;
 
     case  4:
-      showLinkState(net);
+      showForwarding(net);
       break;
 
     case 5:
@@ -78,16 +82,23 @@ int main(){
       if(max_capacity == INFINITY_LENGTH) printf("Path from %d to %d not found\n", start_router, stop_router);
       else printf("Max capacity path from %d to %d found with max_capacity: %.2f Mbps\n", start_router, stop_router, max_capacity);
       break;
-
     case  7:
-      printf("Modified network");
+      printf("Add router");
       break;
-
+    case  8:
+      printf("Add connection");
+      break;
+    case  9:
+      printf("Modify connection state");
+      break;
+    case  10:
+      printf("Modify connection speed");
+      break;
     default:
       break;
     }
     
-  }while(op != 4);
+  }while(op != 8);
     
   return 0;
 }

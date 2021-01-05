@@ -85,7 +85,7 @@ void printLinkNetwork(Network network){
         arr[size] = jval_i(node->key);
         size++;
     }
-
+    printf("%d\n", size);
     for(int i = 0; i < size-1; i++){
         char* ip1 = getRouterIPbyID(network, arr[i]);
         for(int j = i+1; j < size; j++){
@@ -96,9 +96,7 @@ void printLinkNetwork(Network network){
             }
         }
     }
-
-    // free(arr);
-    
+    printf("Hello world");    
     return;
 }
 
