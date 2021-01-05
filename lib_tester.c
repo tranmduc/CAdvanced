@@ -121,7 +121,7 @@ int testPrint(){
 int testReadFile() {
     Network net = createNetwork();
 
-    net =  importRouterFromFile(net, "./data/router.txt");
+    net = importRouterFromFile(net, "./data/router.txt");
     net = importLinkFromFile(net, "./data/connection.txt");
     printRouterNetwork(net);
     printLinkNetwork(net);
@@ -144,7 +144,7 @@ int main(){
    // printf("Pass testShortestPath: %d\n", testShortestPath());
    // printf("Pass testMaxCap: %d\n", testMaxCap());
    // printf("Pass testSimulate: %d\n", testSimulate());
-//     testPrint();
+   //  testPrint();
     testReadFile();
 //     testShowLinkStateTable();
    //testShowForwardingTable();

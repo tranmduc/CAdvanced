@@ -5,7 +5,7 @@
 
 /******************************IMPORT***************************/
 /** Implementation: import.c - Hung */
- Network importRouterFromFile(Network network, char* filename){
+Network importRouterFromFile(Network network, char* filename){
      char *line = NULL;
      size_t len = 0;
      ssize_t read;
@@ -67,7 +67,7 @@
              pch = strtok (NULL, " ");
              count ++;
          }
-         addDirectedLink(network, atoi(router_id_1),atoi(router_id_2), atof(speed),atoi(link_state));
+         addActiveLink(network, atoi(router_id_1),atoi(router_id_2), atof(speed));
      }
      fclose(fp);
      if (line) free(line);
