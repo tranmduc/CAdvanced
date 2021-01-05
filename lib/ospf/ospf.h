@@ -130,6 +130,7 @@ int addLink(Network network, int router_1, int router_2, double speed, int state
  * Return: 1 if success and 0 if not
 */
 int addActiveLink(Network network, int router_1, int router_2, double speed);
+int addDirectedLink(Network network, int router_1, int router_2, double speed, int state);
 
 /** Check link exists between r1 and r2. Return 1(True) or 0(False)*/
 int hasLink(Network network, int router_1, int router_2);
