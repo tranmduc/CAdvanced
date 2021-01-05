@@ -5,7 +5,7 @@
 
 /******************************IMPORT***************************/
 /** Implementation: import.c - Hung */
- Network importNetworkFromFile(Network network, char* filename){
+ Network importRouterFromFile(Network network, char* filename){
      char *line = NULL;
      size_t len = 0;
      ssize_t read;
@@ -21,19 +21,19 @@
 
          strcpy(t_str, line);
          // printf("%s\n", t_str);
-         char * pch = strtok(t_str, " ");
+         char * pch = strtok(t_str, "\t");
          while (pch != NULL)
          {
              if( count ==0) strcpy(router_id, pch);
              else if (count ==1) strcpy(ip, pch);
              else break;
-             pch = strtok (NULL, " ");
+             pch = strtok (NULL, "\t");
              count ++;
          }
          // printf("%s\n", router_id);
          // printf("%s\n", ip);
-         int res = addRouter(network, atoi(router_id), ip);
-         printf("%d\n", res);
+         addRouter(network, atoi(router_id), ip);
+        //  printf("%d\n", res);
      }
      fclose(fp);
      if (line) free(line);
