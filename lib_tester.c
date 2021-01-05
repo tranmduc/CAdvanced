@@ -83,8 +83,8 @@ int testMaxCap(){
    return 1;
 }
 
-int testSimulate(){
-   Network net = initNetwork();
+int testSimulate(Network net){
+   // Network net = initNetwork();
    int start = 1;
    int stop = 5;
 
@@ -105,7 +105,7 @@ int testSimulate(){
    ConnectionList list3 = createConnection(net, start, stop, speed_demand3);
    if(list3 != NULL) return 0;
 
-   dropNetwork(net);
+   // dropNetwork(net);
 
    return 1;
 }
@@ -120,7 +120,6 @@ int testPrint(){
 
 Network testReadFile() {
     Network net = createNetwork();
-
     importRouterFromFile(net, "./data/router.txt");
     importLinkFromFile(net, "./data/connection.txt");
    //  printRouterNetwork(net);
@@ -140,12 +139,10 @@ int testShowForwardingTable(Network net){
 }
 
 int main(){
-   printf("Pass testNetwork: %d\n", testNetwork());
-   printf("Pass testShortestPath: %d\n", testShortestPath());
-   printf("Pass testMaxCap: %d\n", testMaxCap());
-   printf("Pass testSimulate: %d\n", testSimulate());
-   //  testPrint();
-   // Network net = testReadFile();
-   //  testShowLinkStateTable(net);
-   // testShowForwardingTable(net);
+   Network net = testReadFile();
+   // printf("Pass testNetwork: %d\n", testNetwork());
+   // printf("Pass testShortestPath: %d\n", testShortestPath());
+   // printf("Pass testMaxCap: %d\n", testMaxCap());
+   // printf("Pass testSimulate: %d\n", testSimulate());
+   testSimulate(net);
 }

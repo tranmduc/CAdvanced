@@ -44,9 +44,9 @@ int main(){
 
       ConnectionList list = createConnection(net, start_router, stop_router, speed_demand);
       if(list == NULL) break;
-      deactivateAllConnections(list, start_router, stop_router);
+      // deactivateAllConnections(list, start_router, stop_router);
       printf("--------------------------\n");
-      dropNetwork(net);
+      // dropNetwork(net);
       break;
 
     case  3:
