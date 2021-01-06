@@ -96,7 +96,6 @@ void printLinkNetwork(Network network){
             }
         }
     }
-    printf("Hello world");    
     return;
 }
 

@@ -41,7 +41,7 @@ int addDirectedLink(Network network, int router_1, int router_2, double speed, i
     
     jrb_insert_int(router_1_tree_state, router_2, new_jval_i(state)); //add v2 to v1's tree
 
-    //printf("Add link from %d to %d with speed %.2f and state %d sucessfully\n", router_1,router_2, speed, state); //DEBUG
+    printf("Add link from %d to %d with speed %.2f and state %d sucessfully\n", router_1,router_2, speed, state); //DEBUG
     return 1;
     
 }
@@ -143,7 +143,6 @@ double getLinkSpeed(Network network, int router_1, int router_2){
  * speed: in Mbps
  * Return: 1 (success) or 0 (fail)*/
 int setLinkSpeed(Network network, int router_1, int router_2, double speed){
-    //printf("setLinkSpeed: %d to %d with speed %.2f\n", router_1, router_2, speed);
 
     if(getLinkSpeed(network, router_1, router_2) == -1) return 0;
     if (speed < 0 ){
@@ -163,6 +162,7 @@ int setLinkSpeed(Network network, int router_1, int router_2, double speed){
     setLinkSpeedMacro(router_2, router_1);
                                                          
     #undef setLinkSpeedMacro
+    printf("setLinkSpeed: %d to %d with speed %.2f\n", router_1, router_2, speed);
     return 1;
 }
 
@@ -188,7 +188,6 @@ int getLinkState(Network network, int router_1, int router_2){
  * state: either 0 (inactive) or 1 (active) or 2 (busy). other value not accepted.
  * Return: 1 (success) or 0 (fail)*/
 int setLinkState(Network network, int router_1, int router_2, int state){
-    //printf("setLinkState: %d to %d with state %d\n", router_1, router_2, state);
 
     if(checkExistance(network, router_1, router_2) == 0) return 0;
     //check state:
@@ -215,7 +214,7 @@ int setLinkState(Network network, int router_1, int router_2, int state){
     setLinkStateMacro(router_1,router_2);
     setLinkStateMacro(router_2,router_1);
     #undef setLinkStateMacro;
-
+    printf("setLinkState: %d to %d with state %d\n", router_1, router_2, state);
     return 1;
 
 }

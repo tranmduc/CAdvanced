@@ -19,7 +19,7 @@ int addRouter(Network network, int id, char* IP){
 
     //key not found, create new key
     JRB new_node = jrb_insert_int(network.router, id, new_jval_s(strdup(IP)));
-    //printf("Add router %d with name %s to network successfully\n", id, jval_s(new_node->val)); //DEBUG
+    printf("Add router %d with name %s to network successfully\n", id, jval_s(new_node->val)); //DEBUG
     return;
 }
 
@@ -40,6 +40,24 @@ char* getRouterIPbyID(Network network, int id){
         return "";
     }
     return jval_s(found->val);
+}
+
+int getNextRouterID(Network network) {
+    JRB node;
+    // int count = 0;
+    // jrb_traverse(node, network.router){
+    //     count ++;
+    // }
+
+    // int* arr = malloc(count);
+    int arr[NETWORK_MAX_SIZE];
+    int size = 0;
+
+    jrb_traverse(node, network.router){
+        arr[size] = jval_i(node->key);
+        size++;
+    }
+    return size +1 ;
 }
 
 /** Check if the network has vertex with id. Return: 1 (True) or 0 (False) */

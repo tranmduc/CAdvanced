@@ -1,5 +1,5 @@
-#ifndef	_OSPF_H_
-#define	_OSPF_H_
+#ifndef _OSPF_H_
+#define _OSPF_H_
 
 #include "../standard/jrb.h"
 
@@ -13,10 +13,11 @@
 #define BUSY 2 //used up all capacity
 
 /** Network consists of a list of Router, list of speeds (1/weights) and lists of Link states (active or not) */
-typedef struct{
-    JRB router;
-    JRB linkSpeed;
-    JRB linkState;
+typedef struct
+{
+  JRB router;
+  JRB linkSpeed;
+  JRB linkState;
 } Network;
 
 /** Connection: from router_1 to router_2 with a speed demand (in Mbps)
@@ -26,21 +27,23 @@ typedef struct{
  * Ex: <1, network_A, 4,5, 60> is connection with id 1, network A, from router 4 to 5 with a 60 Mbps speed.
 */
 
-typedef struct{
-    int id;
-    Network network;
-    int router1;
-    int router2; 
-    double speed_demand;
-    int prev[NETWORK_MAX_SIZE];
-} Connection; 
+typedef struct
+{
+  int id;
+  Network network;
+  int router1;
+  int router2;
+  double speed_demand;
+  int prev[NETWORK_MAX_SIZE];
+} Connection;
 
 /** Double linked List of connections*/
-typedef struct ConnectionNode{
-    struct ConnectionNode *flink;
-    struct ConnectionNode *blink;
-    Connection val;
-} *ConnectionList;
+typedef struct ConnectionNode
+{
+  struct ConnectionNode *flink;
+  struct ConnectionNode *blink;
+  Connection val;
+} * ConnectionList;
 
 /******************************GENERAL***************************/
 /** Implementation: network.c */
@@ -53,15 +56,14 @@ void dropNetwork(Network network);
 
 /******************************IMPORT***************************/
 /** Implementation: import.c - Hung */
-int importRouterFromFile(Network network, char* filename);
-int importLinkFromFile(Network network, char  *filename);
+int importRouterFromFile(Network network, char *filename);
+int importLinkFromFile(Network network, char *filename);
 
 /******************************PRINTING***************************/
 /** Implementation: print_graph.c - Duc */
 
-
 /** Given the netowrk, print all rounters & links */
-void printNetwork(Network network); 
+void printNetwork(Network network);
 
 /** Print rounters of a network
  * routers:
@@ -86,7 +88,7 @@ void showForwarding(Network network);
 /** Add a router with an id and IP to the network.
  * Return: 1 if successful, 0 if error
  */
-int addRouter(Network network, int id, char* IP);
+int addRouter(Network network, int id, char *IP);
 
 /** Get a router JRB node through the id.
  * Return: JRB node if found. NULL if not.
@@ -96,7 +98,12 @@ JRB getRouterbyID(Network network, int id);
 /** Get IP of a router through the id 
  * Return: the string of rounter's IP
 */
-char* getRouterIPbyID(Network network, int id);
+char *getRouterIPbyID(Network network, int id);
+
+/** Get next router's ID 
+ * Return: Number of next rouuter ID
+*/
+int getNextRouterID(Network network);
 
 /** Check if the network has vertex with id. Return: 1 (True) or 0 (False) */
 int hasRouter(Network network, int id);
@@ -106,7 +113,6 @@ int removeRouter(Network network, int id);
 
 /******************************LINK***************************/
 /** Implementation: link.c */
-
 
 /** Return 1 if network exists and has r1, r2; 0 otherwhise
  * Also printf(stderr) corresponding errors.
@@ -167,8 +173,6 @@ int removeLink(Network network, int router_1, int router_2);
 */
 int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE]);
 
-
-
 /******************************CONNECTION***************************/
 /** Implementation: connection.c */
 
@@ -176,7 +180,7 @@ int getAdjancentRouters(Network network, int router, int output[NETWORK_MAX_SIZE
  * auto-incremental id
  * router1 < router2
 */
-Connection initConnection(Network network, int router1, int router2, double speed_demand, int* prev);
+Connection initConnection(Network network, int router1, int router2, double speed_demand, int *prev);
 
 /** Start a list of connection from start to stop - mimicking packet switching
  * If speed_demand < capacity, then one connection is created only
@@ -211,8 +215,6 @@ int deactivateConnection(Connection connection);
 int deactivateAllConnections(ConnectionList list, int start, int stop);
 void simulate(Network net, int start, int stop, double speed_demand);
 
-
-
 /******************************CONNECTION LIST***************************/
 /** Implementation: dll_connection.c */
 
@@ -223,7 +225,7 @@ extern void free_dllist(ConnectionList);
 extern void dll_append(ConnectionList, Connection);
 extern void dll_prepend(ConnectionList, Connection);
 
-/** Inserts before a given node. */ 
+/** Inserts before a given node. */
 extern void dll_insert_b(ConnectionList, Connection);
 
 /** Inserts after a given node. */
@@ -249,7 +251,6 @@ extern ConnectionList dll_find_next_connection_by_start_stop(ConnectionList, int
 #define dll_rtraverse(ptr, list) \
   for (ptr = list->blink; ptr != list; ptr = ptr->blink)
 
-
 /******************************PATH ALGORITHMS***************************/
 /** Implementation: path_algo.c */
 
@@ -264,13 +265,12 @@ extern ConnectionList dll_find_next_connection_by_start_stop(ConnectionList, int
  * Relaxing an edge (u,v) means testing whether we can improve the shortest path to v found so far by going through u
  * Priority queue is reorganized whenever some v.d() decreases
  *  */
-double findShortestPath(Network network, int start, int stop, int* prev);
+double findShortestPath(Network network, int start, int stop, int *prev);
 
 /** Using findShortestPath() to find the next hop from start to stop(destination).
  * Return: id of the next hop router. Or -1 (NEGATIVE) if no path is available
 */
 int findNextHop(Network network, int start, int stop);
-
 
 /** Find a path from start to stop with max_capacity, or max(min(speed)) along links in the path
  * Djkistra: path with weight 4-5-6 is better, which can hold 100/6=16,667 Mbps
@@ -280,9 +280,7 @@ int findNextHop(Network network, int start, int stop);
  * Ex: Return 20 (success) or -20 (failed)
  * --------------------------
  * */
-double findMaxCapacityPath(Network network, int start, int stop, int* prev);
-
-
+double findMaxCapacityPath(Network network, int start, int stop, int *prev);
 
 /** Relaxing an edge (intermediate_v,current_des) means testing whether we can improve the shortest path to current_des found so far by going through intermediate_v 
  * d: array pointer of estimation shortest path from start
@@ -290,11 +288,10 @@ double findMaxCapacityPath(Network network, int start, int stop, int* prev);
  * priorityQueue: update the PQ when relax successfully
  * Return: 1 - True if relaxed successfully, 0 - false otherwise
 */
-int relaxShortestPath(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue);
+int relaxShortestPath(Network network, int intermediate_v, int current_des, double *d, int *prev, JRB priorityQueue);
 
 /** Relax an edge to find the max capacity path */
-int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double* d, int* prev, JRB priorityQueue);
-
+int relaxMaxCapacity(Network network, int intermediate_v, int current_des, double *d, int *prev, JRB priorityQueue);
 
 /** Init the d,parent array and the priority queue of shortest path
  * Priority queue is reorganized whenever some v.d() decreases
@@ -302,7 +299,7 @@ int relaxMaxCapacity(Network network, int intermediate_v, int current_des, doubl
  * SPF: d[r] = max_int, except d[src] = 0
  * Return: the JRB node of priority queue
  */
-JRB initPriorityQueueSPF(Network network, int start, double* d, int* prev);
+JRB initPriorityQueueSPF(Network network, int start, double *d, int *prev);
 
 /** Init the d,parent array and the priority queue of max cap
  * Priority queue is reorganized whenever some v.d() decreases
@@ -310,12 +307,12 @@ JRB initPriorityQueueSPF(Network network, int start, double* d, int* prev);
  * MaxCap: d[r] = min_int, except d[src] = max_int
  * Return: the JRB node of priority queue
  */
-JRB initPriorityQueueMaxCap(Network network, int start, double* d, int* prev);
+JRB initPriorityQueueMaxCap(Network network, int start, double *d, int *prev);
 
 /** Populate the PQ with data from v.d() and network.
  * Return: the JRB node of priority queue
 */
-JRB populatePriorityQueue(Network network, double* d);
+JRB populatePriorityQueue(Network network, double *d);
 
 /** Update the priority queue due to the new d of vertex
  * Priority queue: to be updated
@@ -329,5 +326,5 @@ int updatePriorityQueue(JRB priorityQueue, int router, double new_d);
 /** Given a well-established path from start to stop, find its max capacity (or min(link's speed))
 * Return: minimum link speed of links on path (in Mbps); 0 if start == stop; Or NEGATIVE (-1) otherwise
 */
-double findPathCapacity(Network network, int start, int stop, int* prev);
+double findPathCapacity(Network network, int start, int stop, int *prev);
 #endif
