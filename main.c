@@ -28,11 +28,13 @@ int main(){
     printf("8. Add connection\n");
     printf("9. Modify connection state\n");
     printf("10. Modify connection speed\n");
-    printf("11. Exit\n");  
+    printf("11. Remove link\n");
+    printf("12. Remove router\n");
+    printf("13. Exit\n");  
     do{
       printf("Enter: ");
       scanf(" %d", &op);
-    }while(op> 11 || op<1);
+    }while(op> 13 || op<1);
 
     switch(op){
     case 1:
@@ -62,11 +64,11 @@ int main(){
       break;
 
     case  3:
-      showLinkState(net);  
+      showForwarding(net);  
       break;
 
     case  4:
-      showForwarding(net);
+      showLinkState(net);
       break;
 
     case 5:
@@ -165,7 +167,6 @@ int main(){
       scanf("%f", &speed);
       double speed_db;
       speed_db = (double)speed;
-      printf("Hello world");
       if(!hasRouter(net, start_router)){
         fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", start_router);
         break;
@@ -180,11 +181,41 @@ int main(){
       }
       setLinkSpeed(net, start_router,stop_router, speed_db);
       break;
+    case  11:
+      printf("Input start router IP ID:\n");
+      scanf("%d", &start_router);
+      printf("Input stop router IP ID:\n");
+      scanf("%d", &stop_router);
+      if(!hasRouter(net, start_router)){
+        fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", start_router);
+        break;
+      }
+      if(!hasRouter(net, stop_router)){
+          fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", stop_router);
+          break;
+      }
+      if(!hasLink(net, start_router, stop_router)){
+        fprintf(stderr, "ERROR: Link from %d to %d does not exist.\n", start_router, stop_router);
+        break;
+      }
+      removeLink(net, start_router, stop_router);
+      printf("Removed link between %d and %d.\n",start_router, stop_router );
+      break;
+    case  12:
+      printf("Select router id:\n");
+      scanf("%d", &start_router);
+      if(!hasRouter(net, start_router)){
+        fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", start_router);
+        break;
+      }
+      removeRouter(net, start_router);
+      printf("Removed router with id %d.\n",start_router );
+      break;
     default:
       break;
     }
     
-  }while(op != 11);
+  }while(op != 13);
   dropNetwork(net);
   return 0;
 }
