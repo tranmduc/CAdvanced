@@ -72,18 +72,18 @@ double findMaxCapacityPath(Network network, int start, int stop, int* prev){
     while(!jrb_empty(priorityQueue)){
         //extract node with smalled d[]
         JRB max_node = jrb_last(priorityQueue);
-        int vertex_min_in_PQ = jval_i(max_node->val);        
+        int vertex_max_in_PQ = jval_i(max_node->val);        
         //printf("findMaxCapPath - Ckpt 2: vertex_min_in_PQ is %d with d[] = %.2f\n", vertex_min_in_PQ, jval_d(max_node->key)); //DEBUG
         jrb_delete_node(max_node);
 
         //Recalculate all path from vertex_min to outDegree
         int output[NETWORK_MAX_SIZE];
-        int n = getAdjancentRouters(network, vertex_min_in_PQ, output);
+        int n = getAdjancentRouters(network, vertex_max_in_PQ, output);
         int current_des;
 
         for(int i=0; i<n; i++){
             current_des = output[i];
-            relaxMaxCapacity(network, vertex_min_in_PQ, current_des, d, prev, priorityQueue);
+            relaxMaxCapacity(network, vertex_max_in_PQ, current_des, d, prev, priorityQueue);
         }
     }    
     
