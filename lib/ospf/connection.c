@@ -49,6 +49,10 @@ Connection initConnection(Network network, int router1, int router2, double spee
 */
 ConnectionList createConnection(Network network, int start, int stop, double speed_demand){
     if(checkExistance(network, start, stop) == 0) return NULL;
+    if(speed_demand <= 0){
+        fprintf(stderr, "Err: Speed demand must be positive (in Mbps)\n");
+        return NULL;
+    }
     ConnectionList return_list = new_dllist();
 
     //Step 1: shortest path

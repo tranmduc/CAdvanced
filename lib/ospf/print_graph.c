@@ -134,3 +134,41 @@ void showForwarding(Network network){
     }
     return;
 }
+
+
+/*Show forwarding table */
+void showForwarding2(Network network){
+    JRB node;
+
+    int arr[NETWORK_MAX_SIZE];
+    int size = 0;
+
+    printf("\nForwarding Table Network\n");
+
+    jrb_traverse(node, network.router){
+        int start = jval_i(node->key);
+        char* startIP = getRouterIPbyID(network, start);
+        printf("Router %d (%s):\n", start, startIP);
+        printf("%-57s\n", "---------------------------------------------------------");
+        printf("|%-7s|%-15s|%-15s|%-15s|\n", "Des ID", "Des IP", "Next Hop ID", "Next Hop IP");
+        printf("%-57s\n", "---------------------------------------------------------");
+
+        JRB node2;
+        jrb_traverse(node2, network.router){
+            int stop = jval_i(node2->key);
+            char* stopIP = getRouterIPbyID(network, stop);
+
+            if(stop != start){
+                int nextHop = findNextHop(network, start, stop);
+                if(nextHop != -1){
+                    char* nextHopIP = getRouterIPbyID(network, nextHop);
+                    printf("|%-7d|%-15s|%-15d|%-15s|\n", stop, stopIP, nextHop, nextHopIP);
+                }else{
+                    printf("|%-7d|%-15s|%-15s|%-15s|\n", stop, stopIP, "-", "Not Found");
+                }  
+            }
+        }
+        printf("%-57s\n", "---------------------------------------------------------");
+    }
+    return;
+}

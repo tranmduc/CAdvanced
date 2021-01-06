@@ -25,9 +25,9 @@ int main(){
     printf("5. Find shortest path\n");
     printf("6. Find path with max capacity\n");
     printf("7. Add router\n");
-    printf("8. Add connection\n");
-    printf("9. Modify connection state\n");
-    printf("10. Modify connection speed\n");
+    printf("8. Add link\n");
+    printf("9. Modify link state\n");
+    printf("10. Modify link speed\n");
     printf("11. Remove link\n");
     printf("12. Remove router\n");
     printf("13. Exit\n");  
@@ -39,7 +39,8 @@ int main(){
     switch(op){
     case 1:
       importRouterFromFile(net, "./data/router.txt");
-      importLinkFromFile(net, "./data/connection.txt");
+      //importLinkFromFile(net, "./data/connection.txt");
+      importLinkFromFileUndirected(net, "./data/connection_undirected.txt");
       break;
 
     case  2:
@@ -48,7 +49,7 @@ int main(){
       printf("Choose stop router:\n");
       scanf("%d", &stop_router); 
       printf("Define speed demand:\n");
-      scanf("%d", &speed_demand); 
+      scanf("%lf", &speed_demand); 
       if(!hasRouter(net, start_router)){
         fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", start_router);
         break;
@@ -64,7 +65,8 @@ int main(){
       break;
 
     case  3:
-      showForwarding(net);  
+      //showForwarding(net);  
+      showForwarding2(net);
       break;
 
     case  4:
@@ -204,11 +206,14 @@ int main(){
     case  12:
       printf("Select router id:\n");
       scanf("%d", &start_router);
+      //printf("Case 12 - Ckpt 1\n");
       if(!hasRouter(net, start_router)){
         fprintf(stderr, "ERROR: The network has no router %d. Please add it first.\n", start_router);
         break;
       }
+      //printf("Case 12 - Ckpt 2\n");
       removeRouter(net, start_router);
+      //printf("Case 12 - Ckpt 3\n");
       printf("Removed router with id %d.\n",start_router );
       break;
     default:

@@ -58,6 +58,8 @@ void dropNetwork(Network network);
 /** Implementation: import.c - Hung */
 int importRouterFromFile(Network network, char *filename);
 int importLinkFromFile(Network network, char *filename);
+/** No directed graph input*/
+int importLinkFromFileUndirected(Network network, char  *filename);
 
 /******************************PRINTING***************************/
 /** Implementation: print_graph.c - Duc */
@@ -81,6 +83,7 @@ void printRouterNetwork(Network network);
 void printLinkNetwork(Network network);
 void showLinkState(Network network);
 void showForwarding(Network network);
+void showForwarding2(Network network);
 
 /******************************ROUTER***************************/
 /** Implementation: router.c */

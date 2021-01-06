@@ -67,11 +67,15 @@ int hasRouter(Network network, int id){
 
 /** Remove a router along with its links & states.  Return: 1 (success) or 0 (fail)*/
 int removeRouter(Network network, int id){
+    //printf("removeRouter - Ckpt 1\n");
+
     JRB router = jrb_find_int(network.router, id);
     if(router == NULL){
         fprintf(stderr, "ERROR: Router with id %d does not exist. Cannot remove it.\n", id);
         return 0;
     }
+
+    //printf("removeRouter - Ckpt 2\n");
 
     //found
     int adjacent_routers[NETWORK_MAX_SIZE];
@@ -80,11 +84,15 @@ int removeRouter(Network network, int id){
         //remove links to adj rounters
         for (int i = 0; i < n; i++)
         {
-            removeLink(network, id, adjacent_routers[i]);
+            //printf("removeRouter - Ckpt 3 - link with router %d\n", adjacent_routers[i]);
+            removeLink(network, id, adjacent_routers[i]);  
         }
         
     }
 
+    //printf("removeRouter - Ckpt 4\n");
     //remove router in network.router
     jrb_delete_node(router);
+
+    //printf("removeRouter - Ckpt 5\n");
 }
